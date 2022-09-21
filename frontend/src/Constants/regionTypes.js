@@ -1,0 +1,8 @@
+export const REGION_TYPES = {
+  RECTANGLE: 'RECTANGLE',
+  ELLIPSE: 'ELLIPSE',
+  LINE: 'LINE',
+  POINT: 'POINT',
+  ERASER: 'ERASER',
+  CLICK: 'CLICK'
+};
