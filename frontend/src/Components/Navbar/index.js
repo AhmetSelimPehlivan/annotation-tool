@@ -1,7 +1,9 @@
+import React, {useState, useEffect} from 'react';
+import {prototype} from 'prop-types';
 import ScNavbar from './ScNavbar';
-const Navbar = () => {
+const Navbar = ({onLoadJson}) => {
     const fileSelectedHandler = event =>{
-        console.log("Event ", event)
+        
     }
     return (
         <ScNavbar>
@@ -10,15 +12,18 @@ const Navbar = () => {
                 <li onClick={""}>Save</li>
                 <li onClick={""}>Import</li>
                 <li onClick={""}>Export</li>
-                <li>
-                <label for="file-upload" class="file-upload" onChange={fileSelectedHandler}>
-                    Load Image
-                </label>
-                <input id="file-upload" type="file" onChange={fileSelectedHandler}/>
-                </li>
+                <li onClick={onLoadJson}>Load Image</li>
                 <li onClick={""}>Settings</li>
             </ul>
         </ScNavbar>
     );
 }
+
+Navbar.propTypes = {
+    onLoadJson: prototype
+};
+  
+Navbar.defaultProps = {
+    onLoadJson: f => f
+};
 export default Navbar;

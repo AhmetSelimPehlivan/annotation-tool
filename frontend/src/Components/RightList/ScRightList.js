@@ -4,6 +4,7 @@ const ScRightList = Styled.div`
     .right-List{
         width: 200px;
         height: 100vh;
+        overflow: scroll;
         .list-header{
             margin: 0px;
             padding: 20px;
@@ -14,17 +15,35 @@ const ScRightList = Styled.div`
         li{
             display: flex;
             flex-direction: column;
-            align-items: center;
-            .preview{
-                width: 150px;
-                height: 90px;
-                margin-top: 20px;
-                cursor: pointer;
+            align-items: flex-start;
+            color: white;
+            margin-top: 5px;
+        }
+
+        .ImageList{
+            width: 180px;
+            height: 20px;
+            margin: 10px;
+            .ImageName{
+                width: 100%;
+                padding: 5px;
+                border: 1px solid black;
             }
-            p{
+            .Image, .Pose{
+                margin: 5px;
+                font-size: 16px;
+            }
+            .Pose{
+                margin: 5px 15px;
+                font-size: 14px;
+            }
+            .Frame{
+                display: flex;
+                align-items: center;
+                width: 80px;
+                margin: 5px 0px;
                 font-size: 12px;
-                color: white;
-                margin-top: 5px;
+                cursor: pointer;
             }
         }
     }

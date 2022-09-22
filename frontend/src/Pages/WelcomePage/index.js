@@ -3,22 +3,33 @@ import Navbar from '../../Components/Navbar';
 import Canvas from '../../Components/Canvas';
 import LeftList from '../../Components/LeftList';
 import RightList from '../../Components/RightList';
+import ImportJson from '../../ImportJson';
 import imge from '../../Assets/yoga.jpg'
+import trJson from '../../Assets/trial.json'
 import { useState } from 'react';
 
 const WelcomePage = () => {
 const [selectedTool, setselectedTool] = useState("");
 const [selectedType, setselectedType] = useState("");
 const [imageWindow, setimageWindow] = useState({});
+const [frames, setFrames] = useState([])
+const [poseNames, setPoseNames] = useState([])
+
 const onImgLoad = ({ target: img }) => {
     const { offsetHeight, offsetWidth } = img;
     setimageWindow({ offsetHeight, offsetWidth })
   };
-
-  console.log(selectedTool)
+const loadJson = () => {
+    let pose = ImportJson(trJson)
+    setPoseNames(pose.poseNames)
+    setFrames(pose.frameList)
+}
+const onSelectedFrame = () =>{
+    console.log("Meta")
+}
     return (
         <>
-        <Navbar/>
+        <Navbar onLoadJson={loadJson}/>
         <ScWelcomePage>
             <LeftList  
                 onSelect={(tool) => {setselectedTool(tool)}} 
@@ -33,7 +44,7 @@ const onImgLoad = ({ target: img }) => {
                 ></img>
                 <Canvas window_size={imageWindow} selectedTool={selectedTool} selectedType={selectedType}/>
             </div>
-            <RightList />
+            <RightList PoseNames={poseNames} Frames={frames} onSelect={onSelectedFrame}/>
         </ScWelcomePage>
         </>
     );

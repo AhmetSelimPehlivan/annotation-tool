@@ -1,5 +1,20 @@
 import trJson from '../Assets/trial.json'
-const ImportJson = () => {
+import {prototype} from 'prop-types';
+const ImportJson = (file) => {
+  const poseNames = []
+  const frameList = []
+  const pose = trJson.MetaInfo.records
+  pose.map((item) => {
+    const frame = []
+    poseNames.push(item.name)
+    //console.log(item.records)
+    item.records.map((index) => frame.push(index.records.frameID))
+    frameList.push(frame)
+  })
+  return {poseNames,frameList}
+  /*
+    useEffect = () => ({
+    },[onClick])
     console.log("clb ",trJson.name)
     const frame = trJson.MetaInfo.records[0].records[0].records.keypoints
     let startPoint = {x:0, y:0}
@@ -31,8 +46,15 @@ const ImportJson = () => {
                 lineCap="round"
             ></Line>})
         }
-    })
+    })*/
 }
+ImportJson.propTypes = {
+  file: prototype
+};
+
+ImportJson.defaultProps = {
+  file: f => f
+};
 export default ImportJson;
 /*
 
