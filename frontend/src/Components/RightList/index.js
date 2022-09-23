@@ -12,7 +12,7 @@ const RightList = ({PoseNames,Frames,onSelect}) => {
                         {PoseNames.map((name,index) => 
                             <li className='Pose'>{name}
                                 <ul>
-                                    {Frames[index].map((id) => <li className='Frame' onClick={onSelect}>Frame {id}</li>)}
+                                    {Frames[index].map((id) => <li className='Frame' onClick={() => onSelect(index,id)}>Frame {id}</li>)}
                                 </ul>
                             </li>
                         )}

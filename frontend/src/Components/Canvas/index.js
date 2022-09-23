@@ -1,12 +1,11 @@
 import ScCanvas from './ScCanvas';
 import { Stage, Layer, Line , Circle } from "react-konva";
-import {useState, useEffect, useRef, useCallback} from "react";
-import {string, dict} from 'prop-types';
-import { REGION_TYPES } from '../../Constants/regionTypes';
+import {useState, useEffect, useCallback} from "react";
+import {string, dict, array} from 'prop-types';
 import { ATTRIBUTE_TYPES } from '../../Constants';
-import { EventHandlers, handleDrag } from '../../Constants/utils';
+import { EventHandlers, handleDrag, handleDragStart, handleDragEnd, handleMouseMove, handleMouseUp} from '../../Constants/utils';
 
-const Canvas = ({window_size,selectedTool, selectedType}) => {
+const Canvas = ({window_size, selectedTool, selectedType, importJson}) => {
 
 const [isDraging, setIsDraging] = useState(false);
 const [firstClick, setfirstClick] = useState(false);
@@ -24,11 +23,11 @@ useEffect(() => {
 
   if(firstClick)
     setLines([...lines, {first_point_id: pointCounter-1, x_start:point[point.length-1].x, y_start:point[point.length-1].y, x_end:currentPoint.x, y_end:currentPoint.y}]);
-  else if(isDraging){
+  else if(isDraging){ //console.log("isDraging ",lines)
     if(newLine.draw === "start")
-      setLines([...lines, {first_point_id: pointCounter-2, x_start:currentPoint.x, y_start:currentPoint.y, x_end:newLine.x_end, y_end:newLine.y_end}]);
+      setLines([...lines, {first_point_id: newLine.fp_id, x_start:currentPoint.x, y_start:currentPoint.y, x_end:newLine.x_end, y_end:newLine.y_end}]);
     else if( newLine.draw === "end")
-      setLines([...lines, {first_point_id: pointCounter-2, x_start:newLine.x_start, y_start:newLine.y_start, x_end:currentPoint.x, y_end:currentPoint.y}]);
+      setLines([...lines, {first_point_id: newLine.fp_id, x_start:newLine.x_start, y_start:newLine.y_start, x_end:currentPoint.x, y_end:currentPoint.y}]);
   }
 },[newLine,currentPoint]);
 
@@ -38,6 +37,14 @@ useEffect(() => {
     setLineColor()
 },[selectedType]);
 
+useEffect(() => {
+  if(Object.keys(importJson).length !== 0){
+    setPoint(importJson.point)
+    setLines(importJson.lines)
+    setLineCount(importJson.lines.length)
+  }
+},[importJson]);
+
 const removeLine = (drag, id, draw_point) => {
   const line = lines.find(({first_point_id}) => first_point_id === (id))
   if(line !== undefined){
@@ -45,68 +52,10 @@ const removeLine = (drag, id, draw_point) => {
     setLines(lines.filter(({first_point_id}) => first_point_id !== (id)))
     setLineCount(lineCount-1)
     if(drag)
-      setNewLine({draw: draw_point ,x_start: line.x_start, y_start: line.y_start, x_end: line.x_end, y_end: line.y_end})
+      setNewLine({draw: draw_point, fp_id: id ,x_start: line.x_start, y_start: line.y_start, x_end: line.x_end, y_end: line.y_end})
+    console.log("drag ",drag," - ",newLine)
   }
 }
-
-const handleDragStart = (e) => {
-  setIsDraging(true)
-  const pt = e.target.attrs
-
-  if(pt.id !== null){
-    removeLine(true, pt.id-0, "start")
-    removeLine(true, pt.id-1, "end")
-  }
-}
-
-const handleDrag = (e) => {
-  const currentPoint = e.currentTarget.getPointerPosition()
-  setcurrentPoint({x:currentPoint.x,y:currentPoint.y})
-}
-
-const handleDragEnd = (e)=>{
-  if(newLine.draw !== false){
-    setLineCount(lineCount+1)
-    setNewLine({draw: false})
-  }
-}
-
-
-const handleMouseMove = (e) => {
-  if (!firstClick) return;
-  const currentPoint = e.currentTarget.getPointerPosition()
-  setcurrentPoint({x:currentPoint.x, y:currentPoint.y})
-};
-
-const handleMouseUp = (e) => {
-  console.log("MouseUp")
-  if (isDraging){
-    setIsDraging(false)
-    return
-  }
-
-  const currentPoint = e.currentTarget.getPointerPosition()
-  if(selectedTool === REGION_TYPES.LINE || selectedTool === REGION_TYPES.POINT){
-    setPoint([...point, {id: pointCounter, x: currentPoint.x, y: currentPoint.y }])
-    setPointCounter(pointCounter+1)
-
-    if(selectedTool === REGION_TYPES.LINE){
-      if (!firstClick)
-        setLineCount(lineCount+1)
-      setfirstClick(!firstClick)
-    }
-  }
-  else if(selectedTool === REGION_TYPES.ERASER){
-    const pt = e.target.attrs
-    if(pt.id !== null){
-      removeLine(false, pt.id-0, "")
-      removeLine(false, pt.id-1, "")
-      setPoint(point.filter(({id}) => id !== (pt.id-0)))
-      console.log("Eraser ",point, " / " ,pt.id, " * ",pt)
-    }
-  }
-};
-
     return (
       <>
       <ScCanvas>
@@ -114,11 +63,11 @@ const handleMouseUp = (e) => {
           className="konva"
           width={window_size.offsetWidth}
           height={window_size.offsetHeight}
-          onMousemove={handleMouseMove}
-          onMouseup={handleMouseUp}
-          onDragStart={handleDragStart}
-          onDragMove={handleDrag}
-          onDragEnd={handleDragEnd}>
+          onMousemove={(e) => handleMouseMove({e, setcurrentPoint, firstClick})}
+          onMouseup={(e) => handleMouseUp({e, setPoint, setPointCounter, setLineCount, setfirstClick, removeLine, point, pointCounter, firstClick, lineCount, selectedTool, setIsDraging, isDraging})}
+          onDragStart={(e) => handleDragStart({e, setIsDraging, removeLine})}
+          onDragMove={(e) => handleDrag({e, setcurrentPoint})}
+          onDragEnd={(e) => handleDragEnd({e, setLineCount, setNewLine, lineCount, newLine})}>
             <Layer>
               {lines.map((element) => 
                   <Line
@@ -150,12 +99,14 @@ const handleMouseUp = (e) => {
 Canvas.propTypes = {
   window_size: dict,
   selectedTool: string,
-  selectedType: string
+  selectedType: string,
+  importJson: dict
 };
 
 Canvas.defaultProps = {
   window_size: {},
   selectedTool: "",
-  selectedType: ""
+  selectedType: "",
+  importJson: {}
 };
 export default Canvas;
