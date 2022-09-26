@@ -9,6 +9,7 @@ const Canvas = ({window_size, selectedTool, selectedType, importJson}) => {
 
 const [isDraging, setIsDraging] = useState(false);
 const [firstClick, setfirstClick] = useState(false);
+const [enterPress, setEnterPress] = useState(false);
 const [lineColor, setLineColor] = useState("green");
 const [lineCount, setLineCount] = useState(0);
 const [currentPoint, setcurrentPoint] = useState({});
@@ -18,18 +19,32 @@ const [point, setPoint] = useState([]);
 const [pointCounter, setPointCounter] = useState(0);
 
 useEffect(() => {
-  if (lineCount < lines.length)
+  if (lineCount < lines.length){
+    if(newLine.node === "internal")
+      lines.pop()
     lines.pop()
-
-  if(firstClick)
-    setLines([...lines, {first_point_id: pointCounter-1, x_start:point[point.length-1].x, y_start:point[point.length-1].y, x_end:currentPoint.x, y_end:currentPoint.y}]);
-  else if(isDraging){ //console.log("isDraging ",lines)
-    if(newLine.draw === "start")
-      setLines([...lines, {first_point_id: newLine.fp_id, x_start:currentPoint.x, y_start:currentPoint.y, x_end:newLine.x_end, y_end:newLine.y_end}]);
-    else if( newLine.draw === "end")
-      setLines([...lines, {first_point_id: newLine.fp_id, x_start:newLine.x_start, y_start:newLine.y_start, x_end:currentPoint.x, y_end:currentPoint.y}]);
   }
-},[newLine,currentPoint]);
+    
+  if(firstClick){
+    if(enterPress){
+      setfirstClick(false)
+      setEnterPress(false)
+    }
+    else
+      setLines([...lines, {previous_id: pointCounter-1, next_id: pointCounter, x_start:point[point.length-1].x, y_start:point[point.length-1].y, x_end:currentPoint.x, y_end:currentPoint.y}]);
+  }
+   else if(isDraging){
+    if(newLine.node === "internal")
+      setLines([...lines,
+        {previous_id: newLine.previous_id-1, next_id: newLine.previous_id, x_start:newLine.xP_start, y_start:newLine.yP_start, x_end:currentPoint.x, y_end:currentPoint.y},
+        {previous_id: newLine.previous_id, next_id: newLine.next_id, x_start:currentPoint.x, y_start:currentPoint.y, x_end:newLine.xN_end, y_end:newLine.yN_end}
+      ]);
+    else if( newLine.node === "external")
+      setLines([...lines, {previous_id: newLine.previous_id, next_id: newLine.next_id, x_start:currentPoint.x, y_start:currentPoint.y, x_end:newLine.x_end, y_end:newLine.y_end}]);
+    else if( newLine.node === "external_end")
+      setLines([...lines, {previous_id: newLine.previous_id-1, next_id: newLine.previous_id, x_start:newLine.x_start, y_start:newLine.y_start, x_end:currentPoint.x, y_end:currentPoint.y}]);
+  }
+},[newLine,currentPoint,enterPress]);
 
 useEffect(() => {
   const attribute = ATTRIBUTE_TYPES.find(({Name}) => Name === selectedType)
@@ -45,15 +60,37 @@ useEffect(() => {
   }
 },[importJson]);
 
-const removeLine = (drag, id, draw_point) => {
-  const line = lines.find(({first_point_id}) => first_point_id === (id))
-  if(line !== undefined){
-    console.log("RemoveLine ",line)
-    setLines(lines.filter(({first_point_id}) => first_point_id !== (id)))
+useEffect(() => {
+  const keyDownHandler = event => {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+        setEnterPress(true)
+    }
+  };
+  document.addEventListener('keydown', keyDownHandler);
+  return () => {
+    document.removeEventListener('keydown', keyDownHandler);
+  };
+}, []);
+
+const removeLine = (drag, prev_id, nxt_id) => {
+  const line = lines.find(({previous_id, next_id}) => previous_id === (prev_id) && next_id === (nxt_id))
+  const line_prev = lines.find(({previous_id, next_id}) => previous_id === (prev_id-1) && next_id === (prev_id))
+
+  if(line_prev !== undefined && line === undefined){
+    setLines(lines.filter(({previous_id, next_id}) => previous_id !== (prev_id-1) && next_id !== (prev_id)))
     setLineCount(lineCount-1)
-    if(drag)
-      setNewLine({draw: draw_point, fp_id: id ,x_start: line.x_start, y_start: line.y_start, x_end: line.x_end, y_end: line.y_end})
-    console.log("drag ",drag," - ",newLine)
+    if(drag) setNewLine({node: "external_end", previous_id: prev_id, next_id: nxt_id, x_start: line_prev.x_start, y_start: line_prev.y_start, x_end: line_prev.x_end, y_end: line_prev.y_end})
+  }
+  else if(line_prev !== undefined){
+    setLines(lines.filter(({previous_id, next_id}) => previous_id !== (prev_id) && next_id !== (nxt_id) && previous_id !== (prev_id-1) && next_id !== (prev_id)))
+    setLineCount(lineCount-2)  
+    if(drag) setNewLine({node: "internal", previous_id: prev_id, next_id: nxt_id, xP_start: line_prev.x_start, yP_start: line_prev.y_start, xN_end: line.x_end, yN_end: line.y_end})
+  }
+  else if(line !== undefined){
+    setLines(lines.filter(({previous_id, next_id}) => previous_id !== (prev_id) && next_id !== (nxt_id)))
+    setLineCount(lineCount-1)
+    if(drag) setNewLine({node: "external", previous_id: prev_id, next_id: nxt_id, x_start: line.x_start, y_start: line.y_start, x_end: line.x_end, y_end: line.y_end})
   }
 }
     return (

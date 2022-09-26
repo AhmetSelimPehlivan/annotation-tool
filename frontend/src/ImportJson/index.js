@@ -1,4 +1,5 @@
 import trJson from '../Assets/trial.json'
+import { ATTRIBUTE_CONNECTIONS } from '../Constants/attributeTypes';
 import {prototype} from 'prop-types';
 
 export const ImportJson = (file) => {
@@ -19,13 +20,16 @@ export const GetFrame = (poseIndex,frameIndex) =>{
   let lines = []
   let point = []
   let counter = 0
-  if(pose.length !== 0){
-    pose.keypoints.map( frame =>{
-      if(frame.bodyPart.indexOf("right") >= 0){
-        lines.push({first_point_id: counter-1, x_start:point[point.length-1].x, y_start:point[point.length-1].y, x_end:frame.x/4, y_end:frame.y/4})
-      }
-        point.push({id: counter, x: frame.x/4, y: frame.y/4 })
-        counter++
+  console.log(pose)
+  if(pose.length !== 0){ 
+    ATTRIBUTE_CONNECTIONS.map((item,index) => {
+        item.map((att,index) =>{
+          const frame = pose.keypoints.find(({bodyPart}) => bodyPart === att)
+          if(index > 0)
+            lines.push({previous_id: counter-1, next_id: counter, x_start:point[point.length-1].x, y_start:point[point.length-1].y, x_end:frame.x/4, y_end:frame.y/4})
+          point.push({id: counter, x: frame.x/4, y: frame.y/4 })
+          counter++
+        })
     })
   }
   return {point, lines}
