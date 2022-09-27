@@ -28,8 +28,9 @@ const ScUserLogIn = Styled.div`
         background-image: url(${background_phone_mask});
         background-size: cover;
         height: 96%;
-        width: 90%;
+        width: 91%;
         margin-left: 3px;
+        border-radius: 40px;
         position: relative;
         overflow: hidden;
         
