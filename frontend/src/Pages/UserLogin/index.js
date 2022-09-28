@@ -67,7 +67,7 @@ const UserLogin = () => {
                 }).then((response) => {
                     const accessToken = response?.data?.accessToken;
                     setAuth({accessToken});
-                    response.status === 200 ? navigation("/Welcome"): setwrongLogin(response.data.message);  
+                    response.status === 200 ? navigation("/ImageSet"): setwrongLogin(response.data.message);  
                 });
         } catch (error) {
             setwrongLogin(error.response.data.message)
