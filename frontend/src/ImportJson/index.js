@@ -15,6 +15,26 @@ export const ImportJson = (file) => {
   return {poseNames,frameList}
 }
 
+export const GetFrameIntervals = (Frames) =>{
+  let frames = []
+  Frames.map((element,index) =>{
+      let frame_interval = []
+      let frame_length = parseInt(element.length/100)
+      for (let i = 0; i < frame_length; i++)
+          frame_interval.push("["+i*100+"-"+((i*100)+99)+"]")
+      frame_interval.push("["+frame_length*100+"-"+((frame_length*100)+element.length%100)+"]")
+      frames.push(frame_interval)
+  })
+  return frames
+}
+
+export const GetFrameLengths = (Frames) =>{
+  let frames = []
+  Frames.map((element) =>{
+      frames.push(element.length)
+  })
+  return frames
+}
 export const GetFrame = (poseIndex,frameIndex) =>{
   const pose = trJson.MetaInfo.records[poseIndex].records[frameIndex].records
   let lines = []

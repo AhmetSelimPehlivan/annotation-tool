@@ -128,7 +128,7 @@ const ScUserLogIn = Styled.div`
                 border:0;
                 border-radius: 15px;
                 display: block;
-                margin: 15px auto; 
+                margin: 10px auto; 
                 padding: 15px 45px;
                 width: 100%;
                 font-size: 13px;
@@ -141,6 +141,16 @@ const ScUserLogIn = Styled.div`
                 &:hover {
                     transition: all .3s ease;
                     background-color: rgba(0,0,0,0.8);
+                }
+            }
+            .save-info{
+                margin: 7px 0px;
+                background-color: red;
+                border-radius: 8px;
+                p{
+                    padding: 7px 12px;
+                    color: white;
+                    font-size: 12px;
                 }
             }
         }
@@ -278,6 +288,17 @@ const ScUserLogIn = Styled.div`
                 opacity: 1;
                 visibility: visible;
                 -webkit-transition: all .3s ease;
+            }
+
+            .login-info{
+                margin: 7px 0px;
+                background-color: red;
+                border-radius: 8px;
+                p{
+                    padding: 7px 15px;
+                    color: white;
+                    font-size: 12px;
+                }
             }
         }
     }
