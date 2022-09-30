@@ -1,19 +1,22 @@
-import {BrowserRouter as Router, Navigate ,Route, Link, useNavigate } from 'react-router-dom';
-import  React,{useEffect, useState,useContext } from "react";
-import AuthContext from "../../Context/AuthProvider";
+import {BrowserRouter as Router, Navigate ,Route, Link, useNavigate, useLocation } from 'react-router-dom';
+import  React,{useEffect, useState } from "react";
+import { useDispatch } from 'react-redux'
+import { setCredentials } from '../../Api/Redux/authReducer'
 import ScUserLogin from "./ScUserLogin";
 import Axios from '../../Api/axios'
-import WelcomePage from '../WelcomePage';
 
 const UserLogin = () => {
-    const { setAuth } = useContext(AuthContext);
+    const navigation = useNavigate();
+    const dispatch = useDispatch()
     const [save_msg, setsave_msg] = useState("")
     const [wrongLogin, setwrongLogin] = useState("")
     const [user_name, user_nameset] = useState();
     const [email, emailset] = useState();
+    const [role, setRole] = useState();
     const [password, passwordset] = useState();
     const [userid_login, userid_loginset] = useState();
-    const [password_login, password_loginset] = useState();
+    const [password_login, password_loginset] = useState();    
+    const location = useLocation();
 
     useEffect(() => {
         const loginBtn = document.getElementById('login');
@@ -49,8 +52,9 @@ const UserLogin = () => {
             await Axios.post('/signup',{
                 user_name:  user_name,
                 email:  email,
+                role: role,
                 password:  password,
-                }).then((response) =>{
+                }, { withCredentials: true }).then((response) =>{
                     setsave_msg(response.data.message)
                 });
         } catch (error) {
@@ -58,16 +62,15 @@ const UserLogin = () => {
         }
     }
 
-    const navigation = useNavigate();
     const userAuthorization = async () => {
+        const from = location.state?.from?.pathname || "/ImageSet";
         try {
             await Axios.post('/login',{
                 user_name:  userid_login,
-                password:  password_login,
-                }).then((response) => {
-                    const accessToken = response?.data?.accessToken;
-                    setAuth({accessToken});
-                    response.status === 200 ? navigation("/ImageSet"): setwrongLogin(response.data.message);  
+                password:  password_login
+                }, { withCredentials: true }).then((response) => {
+                    dispatch(setCredentials( response.data.accessToken ))
+                    response.status === 200 ? navigation(from, { replace: true }): setwrongLogin(response.data.message);  
                 });
         } catch (error) {
             setwrongLogin(error.response.data.message)
@@ -83,6 +86,10 @@ const UserLogin = () => {
                             <div  className="form-holder">
                                 <input type="text"  className="input" name="user_name" required onChange={(e)=>{ user_nameset(e.target.value)}} placeholder="User Name" />
                                 <input type="email"  className="input" name="email" required onChange={(e)=>{ emailset(e.target.value)}} placeholder="Email" />
+                                <select onChange={(e) => setRole(e.target.value)} required >
+                                    <option value="User">User</option>
+                                    <option value="Admin">Admin</option>
+                                </select>
                                 <input type="password"  className="input" name="password" required onChange={(e)=>{ passwordset(e.target.value)}} placeholder="Password" />
                             </div>
                             {save_msg != "" ?

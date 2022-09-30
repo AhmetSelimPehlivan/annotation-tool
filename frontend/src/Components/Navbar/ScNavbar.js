@@ -5,6 +5,7 @@ const ScNavbar = Styled.div`
     background: #EE7363;
     display: flex;
     align-items: center;
+    justify-content: space-between;
     ul{
         display: flex;
         li{
@@ -18,6 +19,18 @@ const ScNavbar = Styled.div`
         }
         input[type="file"] {
             display: none;
+        }
+    }
+    .User-Section{
+        margin-right: 20px;
+        display: flex;
+        *{
+            margin: 0px 5px;
+            color: white;
+        }
+        button{
+            cursor: pointer;
+            background: transparent;
         }
     }
     

@@ -101,7 +101,7 @@ const ScUserLogIn = Styled.div`
                 visibility: visible;
                 -webkit-transition: all .3s ease;
                 
-                .input {
+                .input, select {
                     border: 0;
                     outline: none;
                     box-shadow: none;

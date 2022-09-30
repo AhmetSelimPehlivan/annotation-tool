@@ -19,7 +19,7 @@ useEffect (() => {
         <ScBasketPage>
             <Navbar/>
             <div className='main'>    
-                <Card poseNames={poseNames} Frames={frame}/>
+                <Card poseNames={poseNames} Frames={frame} isBasket={true}/>
             </div>
         </ScBasketPage>
     );

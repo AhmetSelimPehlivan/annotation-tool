@@ -44,11 +44,17 @@ const ScCard = Styled.div`
                     }
                     button{
                         width: 50px;
-                        background-color: #239B56;
                         border-radius: 5px;
                         cursor: pointer;
                         border: none;
                         color: white;
+                        font-size: 13px;
+                    }
+                    .pick-button{
+                        background-color: #239B56;
+                    }
+                    .remove-button{
+                        background-color: red;
                     }
                 }
             }
