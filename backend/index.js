@@ -4,6 +4,8 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const authRoute = require('./routes/authRoutes')
+const imageRoute = require('./routes/imageRoutes')
+const taskRoute = require('./routes/taskRoutes')
 
 const app = express();
 require('dotenv/config');
@@ -18,6 +20,8 @@ app.get('/', (req, res) => res.render('/'));
 app.get('/Edit', (req, res) => res.render('Edit'));
 app.get('/ImageSet', (req, res) => res.render('ImageSet'));
 app.use(authRoute);
+app.use(imageRoute);
+app.use(taskRoute);
 
 mongoose.connect(process.env.DB_CONNECTION, {
     useNewUrlParser: true, 

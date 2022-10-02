@@ -1,6 +1,20 @@
 import trJson from '../Assets/trial.json'
 import { ATTRIBUTE_CONNECTIONS } from '../Constants/attributeTypes';
-import {prototype} from 'prop-types';
+import Axios from '../Api/axios'
+
+const addImage = async (imageName, poseNames, available_frame_count) => {
+  try {
+  await Axios.post('/addImage',{
+      image_name:  imageName,
+      poses:  poseNames,
+      total_frame_count: available_frame_count,
+      available_frame_count: available_frame_count,
+      });
+  } catch (error) {
+    console.log("error ",error)
+  }
+  console.log("cong")
+}
 
 export const ImportJson = (file) => {
   const poseNames = []
@@ -11,7 +25,8 @@ export const ImportJson = (file) => {
     poseNames.push(item.name)
     item.records.map((index) => frame.push(index.records.frameID))
     frameList.push(frame)
-  })
+  }) 
+    addImage("imageName", poseNames, GetFrameLengths(frameList))
   return {poseNames,frameList}
 }
 
