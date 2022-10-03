@@ -1,7 +1,7 @@
 import {BrowserRouter as Router, useNavigate, useLocation } from 'react-router-dom';
 import  React,{useEffect, useState } from "react";
 import { useDispatch } from 'react-redux'
-import { setCredentials } from '../../Api/Redux/authReducer'
+import { setCredentials, setUserName } from '../../Api/Redux/authReducer'
 import ScUserLogin from "./ScUserLogin";
 import Axios from '../../Api/axios'
 
@@ -69,6 +69,7 @@ const UserLogin = () => {
                 user_name:  userid_login,
                 password:  password_login
                 }, { withCredentials: true }).then((response) => {
+                    dispatch(setUserName(userid_login))
                     dispatch(setCredentials( response.data.accessToken ))
                     response.status === 200 ? navigation(from, { replace: true }): setwrongLogin(response.data.message);  
                 });
@@ -92,7 +93,7 @@ const UserLogin = () => {
                                 </select>
                                 <input type="password"  className="input" name="password" required onChange={(e)=>{ passwordset(e.target.value)}} placeholder="Password" />
                             </div>
-                            {save_msg != "" ?
+                            {save_msg !== "" ?
                                 <div className='save-info'>
                                     <p>{save_msg}</p>
                                 </div> : ""}
@@ -108,7 +109,7 @@ const UserLogin = () => {
                                 </div>
                                 {   
                                     <div className='login-info'>
-                                        {wrongLogin!="" ? <p>{wrongLogin}</p>
+                                        {wrongLogin!=="" ? <p>{wrongLogin}</p>
                                         :""}
                                     </div>
                                 }

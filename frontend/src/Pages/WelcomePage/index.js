@@ -1,34 +1,47 @@
 import ScWelcomePage from './ScWelcomePage';
 import Navbar from '../../Components/Navbar';
 import Card from '../../Components/Card';
-import {string, dict, array} from 'prop-types';
-import { useState, useEffect, useCallback } from 'react';
+import {dict} from 'prop-types';
+import { useState, useEffect } from 'react';
+import { selectCurrentUser } from '../../Api/Redux/authReducer';
+import { useSelector } from 'react-redux'
 import Axios from '../../Api/axios'
-import { ImportJson } from '../../ImportJson';
+import { useMemo } from 'react';
+//import { ImportJson } from '../../ImportJson';
 
 const WelcomePage = () => {
+    const userName = useSelector(selectCurrentUser)
     const [cardProps,setCardProps] = useState({})
-
-    useEffect (async () => { console.log("Seria")
-    //    ImportJson()
-        try {
-            await Axios.get('/getImage').then((response) =>{console.log("Serib", response.data)
-                setCardProps({image_name: response.data.image_name, poseNames: response.data.poses, frame_count: response.data.frame_count, available_frame_count: response.data.available_frame_count})
-            });
-        } catch (error) {
-            console.log("error ",error)
+    useEffect(() => {
+        //    ImportJson()
+        console.log("UseEffect Request")
+        async function fetchData(){
+            try {
+                await Axios.get('/getImage').then((response) =>{
+                    setCardProps({image_name: response.data.image_name, poseNames: response.data.poses, frame_count: response.data.frame_count, available_frame_count: response.data.available_frame_count})
+                });
+            } catch (error) {
+                console.log("error ",error)
+            }
         }
+        fetchData()
     },[]);
-    const onPick = async (image_Name,pose_name,frame_start,frame_req)=>{
+
+    const onPick = async (image_Name,pose_name,pose_index,frame_start,frame_req)=>{
         try { console.log(frame_start,frame_req)
             await Axios.post('/addTask',{
                 image_name:  image_Name,
                 pose_name:  pose_name,
-                frame_interval: [frame_start,(frame_start+frame_req)],
-                dedicated_user:  "ASP",
+                pose_index: pose_index,
+                frame_interval: {start:frame_start, end:(frame_start+frame_req)},
+                dedicated_user:  userName,
                 finished_frame_count:  0,
-            }).then((response) =>{console.log("Seric")
-                    
+            }).then( async () =>{console.log("Seric",image_Name)
+               await Axios.post('/update_frame',{
+                    image_name:  image_Name,
+                    pose_index: pose_index,
+                    minus_frame_count: frame_req
+                })
             });
         } catch (error) {
             console.log("error ",error)

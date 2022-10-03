@@ -6,7 +6,11 @@ const TaskSchema = new mongoose.Schema({
         required: true
     },
     pose_name:{
-        type: String,
+        type: Array,
+        required: true
+    },
+    pose_index:{
+        type: Array,
         required: true
     },
     frame_interval:{
@@ -18,7 +22,7 @@ const TaskSchema = new mongoose.Schema({
         required: true
     },
     finished_frame_count: {
-        type: Number,
+        type: Array,
         required: true
     }
 });
