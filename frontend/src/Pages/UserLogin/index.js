@@ -1,13 +1,15 @@
 import {BrowserRouter as Router, useNavigate, useLocation } from 'react-router-dom';
 import  React,{useEffect, useState } from "react";
-import { useDispatch } from 'react-redux'
-import { setCredentials, setUserName } from '../../Api/Redux/authReducer'
+import { useDispatch } from 'react-redux';
+import { setCredentials, setUserName } from '../../Api/Redux/authReducer';
+import { emailValidator, passwordValidator } from '../../Constants';
 import ScUserLogin from "./ScUserLogin";
-import Axios from '../../Api/axios'
+import Axios from '../../Api/axios';
 
 const UserLogin = () => {
     const navigation = useNavigate();
     const dispatch = useDispatch()
+    const [isCreated, setIsCreated] = useState(false)
     const [save_msg, setsave_msg] = useState("")
     const [wrongLogin, setwrongLogin] = useState("")
     const [user_name, user_nameset] = useState();
@@ -17,7 +19,7 @@ const UserLogin = () => {
     const [userid_login, userid_loginset] = useState();
     const [password_login, password_loginset] = useState();    
     const location = useLocation();
-console.log("User")
+
     useEffect(() => {
         const loginBtn = document.getElementById('login');
         const signupBtn = document.getElementById('signup');
@@ -49,14 +51,25 @@ console.log("User")
 
     const addUser = async () => { console.log(user_name,email,password)
         try {
-            await Axios.post('/signup',{
-                user_name:  user_name,
-                email:  email,
-                role: role,
-                password:  password,
-                }, { withCredentials: true }).then((response) =>{
-                    setsave_msg(response.data.message)
-                });
+            if(!emailValidator.test(email)){
+                setIsCreated(false)
+                setsave_msg("Email is not valid")
+            }
+            else if(!passwordValidator.test(password)){
+                setIsCreated(false)
+                setsave_msg("Password must contain at least 8 characters, 1 number, 1 upper and 1 lowercase!")
+            }
+            else{
+                await Axios.post('/signup',{
+                    user_name:  user_name,
+                    email:  email,
+                    role: role,
+                    password:  password,
+                    }, { withCredentials: true }).then((response) =>{
+                        setsave_msg(response.data.message)
+                        setIsCreated(true)
+                    });
+            }
         } catch (error) {
             setsave_msg(error.response.data.message)
         }
@@ -79,41 +92,40 @@ console.log("User")
     }
     
     return(
-        <ScUserLogin save>
+        <ScUserLogin isCreated={isCreated}>
             <div className='phone-background'>
                 <div  className="form-structor">
                     <div  className="signup">
                         <h2  className="form-title" id="signup"><span>or</span>Sign up</h2>
                             <div  className="form-holder">
-                                <input type="text"  className="input" name="user_name" required onChange={(e)=>{ user_nameset(e.target.value)}} placeholder="User Name" />
-                                <input type="email"  className="input" name="email" required onChange={(e)=>{ emailset(e.target.value)}} placeholder="Email" />
+                                <input type="text" className="input" name="user_name" minLength="3" maxLength="20" required onChange={(e)=>{ user_nameset(e.target.value)}} placeholder="User Name" />
+                                <input type="email" className="input" name="email" required onChange={(e)=>{ emailset(e.target.value)}} placeholder="Email" />
                                 <select onChange={(e) => setRole(e.target.value)} required >
                                     <option value="User">User</option>
                                     <option value="Admin">Admin</option>
                                 </select>
-                                <input type="password"  className="input" name="password" required onChange={(e)=>{ passwordset(e.target.value)}} placeholder="Password" />
+                                <input type="password"  className="input" name="password" minLength="8" maxLength="20" required onChange={(e)=>{ passwordset(e.target.value)}} placeholder="Password" />
                             </div>
                             {save_msg !== "" ?
                                 <div className='save-info'>
                                     <p>{save_msg}</p>
                                 </div> : ""}
-                            <button  className="submit-btn" onClick={addUser}>Sign up</button>
+                            <button className="submit-btn" onClick={addUser}>Sign up</button>
                         
                     </div>
                     <div  className="login slide-up">
                         <div  className="center">
-                                <h2  className="form-title" id="login"><span>or</span>Log in</h2>
-                                <div  className="form-holder">
-                                    <input type="text"  className="input" name="user_name" required onChange={(e)=>{ userid_loginset(e.target.value)}} placeholder="User Name" />
-                                    <input type="password"  className="input" name="password" required onChange={(e)=>{ password_loginset(e.target.value)}} placeholder="Password" />
+                            <h2  className="form-title" id="login"><span>or</span>Log in</h2>
+                            <div  className="form-holder">
+                                <input type="text" className="input" name="user_name" required onChange={(e)=>{ userid_loginset(e.target.value)}} placeholder="User Name" />
+                                <input type="password" className="input" name="password" minLength="8" maxLength="20" required onChange={(e)=>{ password_loginset(e.target.value)}} placeholder="Password" />
+                            </div>{console.log(" s2 ",isCreated)}
+                            {
+                                <div className='login-info'>
+                                    {wrongLogin!=="" ? <p>{wrongLogin}</p> : ""}
                                 </div>
-                                {   
-                                    <div className='login-info'>
-                                        {wrongLogin!=="" ? <p>{wrongLogin}</p>
-                                        :""}
-                                    </div>
-                                }
-                                <button  className="submit-btn" onClick={userAuthorization}>Log in</button>
+                            }
+                            <button  className="submit-btn" onClick={userAuthorization}>Log in</button>
                         </div>
                     </div>
                 </div>

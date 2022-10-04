@@ -1,7 +1,8 @@
-import {BrowserRouter as Router, Navigate ,Route, Link, useNavigate, useLocation } from 'react-router-dom';
-import React, {useState, useEffect} from 'react';
-import { useDispatch } from 'react-redux'
-import {prototype} from 'prop-types';
+import {BrowserRouter as Router,useNavigate, useLocation } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux'
+import { prototype } from 'prop-types';
+import React from 'react';
+import { selectCurrentUser } from '../../Api/Redux/authReducer';
 import { logOut } from '../../Api/Redux/authReducer';
 import Axios from '../../Api/axios';
 import ScNavbar from './ScNavbar';
@@ -10,6 +11,7 @@ const Navbar = ({onLoadJson}) => {
     const dispatch = useDispatch()
     const navigation = useNavigate();
     const location = useLocation();
+    const userName = useSelector(selectCurrentUser)
 
     const signOut = async () => {
         const from = location.state?.from?.pathname || "/";
@@ -18,7 +20,7 @@ const Navbar = ({onLoadJson}) => {
             navigation(from, { replace: true })
         });
     }
-    
+
     return (
         <ScNavbar>
             <ul>
@@ -29,7 +31,7 @@ const Navbar = ({onLoadJson}) => {
                 <li onClick={""}>Settings</li>
             </ul>
             <div className='User-Section'>
-                <p>User Name</p>
+                <p>{userName}</p>
                 <button onClick={signOut}>LogOut</button>
             </div>
         </ScNavbar>

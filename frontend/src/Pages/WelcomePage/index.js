@@ -13,18 +13,11 @@ const WelcomePage = () => {
     const socket = io("http://localhost:3001/")
     const userName = useSelector(selectCurrentUser)
     const [cardProps,setCardProps] = useState({})
-/*
-    useCallback(() => {
 
-    },[socket]);
-*/
-socket.on("connect", ()=>{
-    console.log(`You connected :, ${socket.id}`)
-})
-socket.on("recieve-available_frame_count", message =>{
-    console.log(`You available_frame_count :, ${message}`)
-    setCardProps(prevProps => ({...prevProps, available_frame_count: message})) 
-})
+    socket.on("recieve-available_frame_count", message =>{
+        console.log(`You available_frame_count :, ${message}`)
+        setCardProps(prevProps => ({...prevProps, available_frame_count: message})) 
+    })
     useEffect(() => {
         //    ImportJson()
         async function fetchData(){
@@ -37,6 +30,9 @@ socket.on("recieve-available_frame_count", message =>{
             }
         }
         fetchData()
+        socket.on("connect", ()=>{
+            console.log(`You connected :, ${socket.id}`)
+        })
     },[]);
 
     const onPick = async (image_Name,pose_name,pose_index,frame_start,frame_req)=>{

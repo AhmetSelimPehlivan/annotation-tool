@@ -145,7 +145,7 @@ const ScUserLogIn = Styled.div`
             }
             .save-info{
                 margin: 7px 0px;
-                background-color: red;
+                ${({isCreated}) => isCreated ? "background-color: green;":"background-color: red;"}
                 border-radius: 8px;
                 p{
                     padding: 7px 12px;

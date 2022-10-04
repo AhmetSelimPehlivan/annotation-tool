@@ -58,7 +58,3 @@ export const handleMouseUp = ({e, setPoint, setPointCounter, setLineCount, setfi
     }
   }
 };
-/*
-export const EventHandlers = {
-    HANDLEMOUSEMOVE: (e,setfirstClick) => {},
-};*/
