@@ -1,20 +1,32 @@
+import { useState, useEffect, useCallback } from 'react';
+import {dict} from 'prop-types';
+import io from 'socket.io-client'
+import { useSelector } from 'react-redux'
 import ScWelcomePage from './ScWelcomePage';
 import Navbar from '../../Components/Navbar';
 import Card from '../../Components/Card';
-import {dict} from 'prop-types';
-import { useState, useEffect } from 'react';
 import { selectCurrentUser } from '../../Api/Redux/authReducer';
-import { useSelector } from 'react-redux'
 import Axios from '../../Api/axios'
-import { useMemo } from 'react';
 //import { ImportJson } from '../../ImportJson';
 
 const WelcomePage = () => {
+    const socket = io("http://localhost:3001/")
     const userName = useSelector(selectCurrentUser)
     const [cardProps,setCardProps] = useState({})
+/*
+    useCallback(() => {
+
+    },[socket]);
+*/
+socket.on("connect", ()=>{
+    console.log(`You connected :, ${socket.id}`)
+})
+socket.on("recieve-available_frame_count", message =>{
+    console.log(`You available_frame_count :, ${message}`)
+    setCardProps(prevProps => ({...prevProps, available_frame_count: message})) 
+})
     useEffect(() => {
         //    ImportJson()
-        console.log("UseEffect Request")
         async function fetchData(){
             try {
                 await Axios.get('/getImage').then((response) =>{
@@ -43,6 +55,7 @@ const WelcomePage = () => {
                     minus_frame_count: frame_req
                 }).then(()=>{
                 cardProps.available_frame_count[pose_index] -=frame_req
+                socket.emit('available_frame_count',cardProps.available_frame_count)
                 setCardProps(prevProps => ({...prevProps, available_frame_count: cardProps.available_frame_count})) 
             })})
         } catch (error) {

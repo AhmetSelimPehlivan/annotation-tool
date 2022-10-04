@@ -17,7 +17,7 @@ const UserLogin = () => {
     const [userid_login, userid_loginset] = useState();
     const [password_login, password_loginset] = useState();    
     const location = useLocation();
-
+console.log("User")
     useEffect(() => {
         const loginBtn = document.getElementById('login');
         const signupBtn = document.getElementById('signup');
