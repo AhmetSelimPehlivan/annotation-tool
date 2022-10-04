@@ -41,8 +41,10 @@ const WelcomePage = () => {
                     image_name:  image_Name,
                     pose_index: pose_index,
                     minus_frame_count: frame_req
-                })
-            });
+                }).then(()=>{
+                cardProps.available_frame_count[pose_index] -=frame_req
+                setCardProps(prevProps => ({...prevProps, available_frame_count: cardProps.available_frame_count})) 
+            })})
         } catch (error) {
             console.log("error ",error)
         }
@@ -50,7 +52,7 @@ const WelcomePage = () => {
     return (
         <ScWelcomePage>
             <Navbar/>
-            <div className='main'>    
+            <div className='main'>
                 <Card name={cardProps.image_name} poseNames={cardProps.poseNames} frame_count={cardProps.frame_count} available_frame_count={cardProps.available_frame_count} isBasket={false} onPick={onPick}/>
             </div>
         </ScWelcomePage>
