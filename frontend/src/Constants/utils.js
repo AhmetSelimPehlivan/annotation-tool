@@ -8,6 +8,7 @@ export const handleDragStart = ({e, setIsDraging, removeLine}) => {
   console.log("dragStart")
   setIsDraging(true)
   const pt = e.target.attrs
+  console.log(pt)
   if(pt.id !== null)
     removeLine(true, pt.id-0, (pt.id-0)+1)
 }

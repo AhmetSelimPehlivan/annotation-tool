@@ -2,13 +2,14 @@ const express = require("express");
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
 require('dotenv/config');
-const mongoose = require('mongoose');
 const http = require("http");
+const mongoose = require('mongoose');
 const {Server} = require('socket.io')
 const bodyParser = require('body-parser');
 const authRoute = require('./routes/authRoutes')
 const imageRoute = require('./routes/imageRoutes')
 const taskRoute = require('./routes/taskRoutes')
+const s3Route = require('./routes/s3Routes')
 const app = express();
 const server = http.createServer(app);
 
@@ -25,12 +26,10 @@ app.use(cookieParser());
 app.use(bodyParser.json());
 
 // Routes
-app.get('/', (req, res) => res.render('/'));
-app.get('/Edit', (req, res) => res.render('Edit'));
-app.get('/ImageSet', (req, res) => res.render('ImageSet'));
 app.use(authRoute);
 app.use(imageRoute);
 app.use(taskRoute);
+app.use(s3Route);
 
 
 mongoose.connect(process.env.DB_CONNECTION, {
@@ -53,5 +52,7 @@ io.on("connection", (socket) => {
   //  socket.broadcast.emit("")
   })*/
 });
+
+//S3 Bucket Load
 
 server.listen(process.env.PORT)

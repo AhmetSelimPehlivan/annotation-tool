@@ -50,6 +50,7 @@ export const GetFrameLengths = (Frames) =>{
   })
   return frames
 }
+
 export const GetFrame = (poseIndex,frameIndex) =>{
   const pose = trJson.MetaInfo.records[poseIndex].records[frameIndex].records
   let lines = []

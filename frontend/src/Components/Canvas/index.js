@@ -1,9 +1,9 @@
 import ScCanvas from './ScCanvas';
 import { Stage, Layer, Line , Circle } from "react-konva";
-import {useState, useEffect, useCallback} from "react";
-import {string, dict, array} from 'prop-types';
+import {useState, useEffect} from "react";
+import {string, dict} from 'prop-types';
 import { ATTRIBUTE_TYPES } from '../../Constants';
-import { EventHandlers, handleDrag, handleDragStart, handleDragEnd, handleMouseMove, handleMouseUp} from '../../Constants/utils';
+import { handleDrag, handleDragStart, handleDragEnd, handleMouseMove, handleMouseUp} from '../../Constants/utils';
 
 const Canvas = ({window_size, selectedTool, selectedType, importJson}) => {
 
@@ -33,7 +33,7 @@ useEffect(() => {
     else
       setLines([...lines, {previous_id: pointCounter-1, next_id: pointCounter, x_start:point[point.length-1].x, y_start:point[point.length-1].y, x_end:currentPoint.x, y_end:currentPoint.y}]);
   }
-   else if(isDraging){
+  else if(isDraging){
     if(newLine.node === "internal")
       setLines([...lines,
         {previous_id: newLine.previous_id-1, next_id: newLine.previous_id, x_start:newLine.xP_start, y_start:newLine.yP_start, x_end:currentPoint.x, y_end:currentPoint.y},
