@@ -21,6 +21,12 @@ module.exports.get_Image_get = async (req, res) => {
             image_ids.push(images[index].image_id)
             frame_counts.push(images[index].total_frame_count)
         }
+        uniqueArray = poseNames.filter(function(item, pos,index) {
+                if(poseNames.indexOf(item) === pos)
+                    console.log(item, pos)
+                //console.log("i ",poseNames.indexOf(item) === pos)
+            return poseNames.indexOf(item) === pos;
+        })
         res.status(201).send({pose_name: poseNames, image_id: image_ids, frame_count: frame_counts, available_frame_count: frame_counts, message: "Pose is gotten successfully" });
     } catch (error) {
         res.status(500).send({ message: "!Internal Server Error\n",error });
@@ -28,7 +34,7 @@ module.exports.get_Image_get = async (req, res) => {
 }
 
 module.exports.update_frame_post = async (req, res) => {
-    try { 
+    try {
         const pose = await Image.find({pose_name: req.body.pose_name})
         let frames = pose[0].available_frame_count
         console.log("frames ",frames)
@@ -45,6 +51,7 @@ module.exports.update_frame_post = async (req, res) => {
 
 module.exports.get_Frame_get = async (req, res) => {
     try {
+        console.log("GetFrame ",req.body)
         Image.find({pose_name: req.body.pose_name})
         res.status(201).send({keypoints: req.body.keypoints})
     } catch (error) {

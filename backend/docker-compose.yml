@@ -2,6 +2,7 @@ version: '3.4'
 
 services:
   annotatortool:
+    container_name: annotatortool
     image: annotatortool
     build:
       context: .
@@ -9,4 +10,11 @@ services:
     environment:
       NODE_ENV: production
     ports:
-      - 3000:3000
+      - 7500:7500
+    links:
+      - mongo
+  mongo:
+    container_name: mongodb
+    image: mongo:latest 
+    ports:
+      - "27017:27017"

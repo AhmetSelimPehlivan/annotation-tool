@@ -1,4 +1,5 @@
 const Image = require('../models/Image');
+const Keypoint = require('../models/Keypoint');
 const zlib = require("zlib");
 const { S3Client, GetObjectCommand, ListObjectsCommand } = require("@aws-sdk/client-s3");
 // Load the AWS SDK for Node.js
@@ -63,23 +64,21 @@ const streamToString = (stream) => new Promise((resolve, reject) => {
   });
 });
 
-const ImportJson = (name,image_id,data) => {// console.log("Import ",name)
-  //const keypoints = []
-  /*data.records.map((item) => {
-    keypoints.push(item.keypoints)
-  })*/
-  //addNewPosesToDb(name, image_id, keypoints, keypoints.length)
+const ImportJson = (name,image_id,data) => {
+  const keypoints = []
+  for (let index = 0; index < data.records.length; index++) {
+    let points = []
+    for (let i = 0; i < data.records[index].keypoints.length; i++)
+      points.push({xAxis: data.records[index].keypoints[i].xAxis, yAxis: data.records[index].keypoints[i].yAxis})
+    keypoints.push(points)
+  }
+  
   addNewPosesToDb(name, image_id, data.records.length)
+  addNewKeypointsToDb(image_id,keypoints,keypoints.length)
 }
-
-const addNewPosesToDb = async (pose_name,image_id/*,keypoints*/,frame_count) =>{
-  await Image.create({
-    pose_name: pose_name,
-    image_id: image_id,
-    //keypoints: keypoints,
-    total_frame_count: frame_count,
-    available_frame_count: frame_count
-  });
+const ImportKeypointsJson = (data) => {
+  //addNewPosesToDb(name, image_id, data.records.length)
+  console.log("data ",data)
 }
 
 const uploadBucketToS3 = async (bucketName) => {
@@ -90,6 +89,23 @@ const uploadBucketToS3 = async (bucketName) => {
   }
   const bucketData = s3.listObjects(params).promise()
   return bucketData
+}
+
+const addNewPosesToDb = async (pose_name,image_id,frame_count) =>{
+  await Image.create({
+    pose_name: pose_name,
+    image_id: image_id,
+    total_frame_count: frame_count,
+    available_frame_count: frame_count
+  });
+}
+
+const addNewKeypointsToDb = async (image_id,points,frame_count) =>{
+  await Keypoint.create({
+    image_id: image_id,
+    points: points,
+    frame_count: frame_count,
+  });
 }
 
 module.exports = {getBucketFromS3}

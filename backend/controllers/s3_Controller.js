@@ -1,4 +1,3 @@
-const zlib = require('zlib');
 const fs = require('fs')
 const {getBucketFromS3} = require('../services/s3_bucket')
 
@@ -32,17 +31,6 @@ module.exports.uploadToBucket = async(req, res) => {
           }
         
         return s3.upload(uploadParams).promise()
-
-        const {Contents=[]} = bucketData;
-        //console.log("*** Contents ",)
-        unzip(Contents[2].Key)
-        res.status(201).send(Contents.map( content => {
-            return {
-                key: content.Key,
-                size: (content.Size/1024).toFixed(1),
-                lastModified: content.lastModified
-            }
-        }));
     } catch (error) {
         res.status(500).send([]);
     }

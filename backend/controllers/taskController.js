@@ -30,6 +30,7 @@ module.exports.addTask_post = async (req, res) => {
 module.exports.getTask_post = async (req, res) => {
     try {
         const userTasks = await Task.find({dedicated_user: req.body.dedicated_user})
+        
         //console.log(userTasks)
         res.status(201).send({tasks: userTasks, message: "Tasks are gotten successfully" });
         //res.status(201).send({pose_name: userTasks.pose_name, image_id: userTasks.image_id, frame_interval: userTasks.frame_interval, finished_frame_count: userTasks.finished_frame_count, message: "Tasks are gotten successfully" });

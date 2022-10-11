@@ -1,5 +1,3 @@
-import trJson from '../Assets/trial.json'
-import { ATTRIBUTE_CONNECTIONS } from '../Constants/attributeTypes';
 import Axios from '../Api/axios'
 
 export const GetFrameIntervals = (Frames) =>{
@@ -25,9 +23,11 @@ export const GetFrameLengths = (Frames) =>{
 
 export const GetFrame = async(poseName,image_id,frameIndex) =>{
   try {
-    console.log("GetFrame")
+    console.log("GetFrame",poseName,image_id,frameIndex)
     await Axios.post('/getFrame',{
-      poseName: poseName,
+      pose_name: poseName,
+      image_id: image_id,
+      frameIndex: frameIndex
     }).then((response) =>{
         console.log(response,"resp")
        // setframe_interval(response.data.tasks[0].frame_interval)
