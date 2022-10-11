@@ -1,20 +1,20 @@
 const mongoose = require('mongoose');
 
 const ImageSchema = new mongoose.Schema({
-    image_name:{
+    pose_name:{
         type: String,
         required: true
     },
-    poses:{
-        type: Array,
+    image_id:{
+        type: String,
         required: true
     },
     total_frame_count:{
-        type: Array,
+        type: Number,
         required: true
     },
     available_frame_count:{
-        type: Array,
+        type: Number,
         required: true
     }
 });

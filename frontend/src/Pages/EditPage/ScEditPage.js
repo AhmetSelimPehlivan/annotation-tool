@@ -5,6 +5,9 @@ const EditPage = Styled.div`
     .main{
         margin: 0px 15px;
         .Image{
+            width: ${({window_size}) => window_size.x}px;
+            height: ${({window_size}) => window_size.y}px;
+            background: black;
             position: absolute;
             visibility: visible !important;
             opacity: 1 !important;

@@ -1,12 +1,15 @@
 import ScCanvas from './ScCanvas';
 import { Stage, Layer, Line , Circle } from "react-konva";
 import {useState, useEffect} from "react";
-import {string, dict} from 'prop-types';
+import {string, dict, bool} from 'prop-types';
 import { ATTRIBUTE_TYPES } from '../../Constants';
+import { useDispatch } from 'react-redux';
+import { setPointsArray, setLinesArray } from '../../Api/Redux/editReducer';
 import { handleDrag, handleDragStart, handleDragEnd, handleMouseMove, handleMouseUp} from '../../Constants/utils';
 
-const Canvas = ({window_size, selectedTool, selectedType, importJson}) => {
+const Canvas = ({window_size, selectedTool, selectedType, importJson, isSubmit}) => {
 
+const dispatch = useDispatch()
 const [isDraging, setIsDraging] = useState(false);
 const [firstClick, setfirstClick] = useState(false);
 const [enterPress, setEnterPress] = useState(false);
@@ -19,6 +22,8 @@ const [point, setPoint] = useState([]);
 const [pointCounter, setPointCounter] = useState(0);
 
 useEffect(() => {
+  //if(point.length > 0)
+    //console.log(point[point.length-1].getAbsolutePosition())
   if (lineCount < lines.length){
     if(newLine.node === "internal")
       lines.pop()
@@ -73,6 +78,11 @@ useEffect(() => {
   };
 }, []);
 
+const onSubmit = () =>{
+  dispatch(setPointsArray(point))
+  dispatch(setLinesArray(lines))
+}
+
 const removeLine = (drag, prev_id, nxt_id) => {
   const line = lines.find(({previous_id, next_id}) => previous_id === (prev_id) && next_id === (nxt_id))
   const line_prev = lines.find(({previous_id, next_id}) => previous_id === (prev_id-1) && next_id === (prev_id))
@@ -98,8 +108,8 @@ const removeLine = (drag, prev_id, nxt_id) => {
       <ScCanvas>
         <Stage
           className="konva"
-          width={window_size.offsetWidth}
-          height={window_size.offsetHeight}
+          width={window_size.x}
+          height={window_size.y-10}
           onMousemove={(e) => handleMouseMove({e, setcurrentPoint, firstClick})}
           onMouseup={(e) => handleMouseUp({e, setPoint, setPointCounter, setLineCount, setfirstClick, removeLine, point, pointCounter, firstClick, lineCount, selectedTool, setIsDraging, isDraging})}
           onDragStart={(e) => handleDragStart({e, setIsDraging, removeLine})}
@@ -129,6 +139,7 @@ const removeLine = (drag, prev_id, nxt_id) => {
               )}
             </Layer>
           </Stage>
+          <button className='Submit-Button' onClick={onSubmit}>Submit</button>
       </ScCanvas>
       </>
     );
@@ -137,13 +148,15 @@ Canvas.propTypes = {
   window_size: dict,
   selectedTool: string,
   selectedType: string,
-  importJson: dict
+  importJson: dict,
+  isSubmit: bool
 };
 
 Canvas.defaultProps = {
   window_size: {},
   selectedTool: "",
   selectedType: "",
-  importJson: {}
+  importJson: {},
+  isSubmit: false
 };
 export default Canvas;

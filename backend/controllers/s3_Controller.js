@@ -6,8 +6,7 @@ module.exports.readFromBucket = async(req, res) => {
     try {
         const bucketData = await getBucketFromS3(process.env.AWS_FETCH_BUCKET_NAME);
         const {Contents=[]} = bucketData;
-        //console.log("*** Contents ",)
-        unzip(Contents[2].Key)
+        //console.log("*** Contents ",Contents)
         res.status(201).send(Contents.map( content => {
             return {
                 key: content.Key,
@@ -48,14 +47,23 @@ module.exports.uploadToBucket = async(req, res) => {
         res.status(500).send([]);
     }
 }
-const unzip = (data) => zlib.gunzip(data,function(error, buff){
-    //console.log("*** ",data)
-    if(error != null){
-        console.log("err ",error)                             
-       //An error occured while unzipping the .gz file.
-    }
-    else{                                     
-        console.log(buff)               
-     //Use the buff which contains the unzipped JSON.
-    }
-  });
+
+  const processS3File = () => {
+    return new Promise((resolve, reject) => {
+      console.log("File read from S3.");
+      let records = [];
+      try {
+        let readStream = S3.getObject(s3Config).createReadStream();
+        let lineReader = readLine.createInterface({ input: readStream });
+        lineReader.on("line", line => {
+           records.push(line);
+        }).on("close", () => {
+           console.log("Finished processing S3 file.");
+            resolve(records);
+       });
+      } catch (err) {
+      console.log("Error: ", err);
+      reject(err);
+        }
+    })
+ }

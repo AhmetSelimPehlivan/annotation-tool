@@ -71,6 +71,6 @@ export const ATTRIBUTE_TYPES = [
     Color: "#F1C40F"
   }
 ];
-
+export const EditWidowSize = {x: 540, y: 560}
 export const passwordValidator= /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}$/
 export const emailValidator= /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/

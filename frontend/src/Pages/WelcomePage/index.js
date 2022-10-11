@@ -1,5 +1,4 @@
 import { useState, useEffect, useCallback } from 'react';
-import {dict} from 'prop-types';
 import io from 'socket.io-client'
 import { useSelector } from 'react-redux'
 import ScWelcomePage from './ScWelcomePage';
@@ -7,7 +6,6 @@ import Navbar from '../../Components/Navbar';
 import Card from '../../Components/Card';
 import { selectCurrentUser } from '../../Api/Redux/authReducer';
 import Axios from '../../Api/axios'
-//import { ImportJson } from '../../ImportJson';
 
 const WelcomePage = () => {
     const socket = io("http://localhost:3001/")
@@ -15,15 +13,14 @@ const WelcomePage = () => {
     const [cardProps,setCardProps] = useState({})
 
     socket.on("recieve-available_frame_count", message =>{
-        console.log(`You available_frame_count :, ${message}`)
+        //console.log(`You available_frame_count :, ${message}`)
         setCardProps(prevProps => ({...prevProps, available_frame_count: message})) 
     })
     useEffect(() => {
-        //    ImportJson()
         async function fetchData(){
             try {
                 await Axios.get('/getImage').then((response) =>{
-                    setCardProps({image_name: response.data.image_name, poseNames: response.data.poses, frame_count: response.data.frame_count, available_frame_count: response.data.available_frame_count})
+                    setCardProps({pose_name: response.data.pose_name, image_id: response.data.image_id, frame_count: response.data.frame_count, available_frame_count: response.data.available_frame_count})
                 });
             } catch (error) {
                 console.log("error ",error)
@@ -35,18 +32,19 @@ const WelcomePage = () => {
         })
     },[]);
 
-    const onPick = async (image_Name,pose_name,pose_index,frame_start,frame_req)=>{
-        try { console.log(frame_start,frame_req)
+    const onPick = async (pose_name,image_id,pose_index,frame_start,frame_req)=>{
+        try {
             await Axios.post('/addTask',{
-                image_name:  image_Name,
                 pose_name:  pose_name,
+                image_id:  image_id,
                 pose_index: pose_index,
                 frame_interval: {start:frame_start, end:(frame_start+frame_req)},
                 dedicated_user:  userName,
                 finished_frame_count:  0,
-            }).then( async () =>{console.log("Seric",image_Name)
+            }).then( async () =>{
                await Axios.post('/update_frame',{
-                    image_name:  image_Name,
+                    pose_name:  pose_name,
+                    image_id:  image_id,
                     pose_index: pose_index,
                     minus_frame_count: frame_req
                 }).then(()=>{
@@ -62,16 +60,9 @@ const WelcomePage = () => {
         <ScWelcomePage>
             <Navbar/>
             <div className='main'>
-                <Card name={cardProps.image_name} poseNames={cardProps.poseNames} frame_count={cardProps.frame_count} available_frame_count={cardProps.available_frame_count} isBasket={false} onPick={onPick}/>
+                <Card pose_name={cardProps.pose_name} image_id={cardProps.image_id} frame_count={cardProps.frame_count} available_frame_count={cardProps.available_frame_count} isBasket={false} onPick={onPick}/>
             </div>
         </ScWelcomePage>
     );
 }
-WelcomePage.propTypes = {
-    importJson: dict
-  };
-  
-WelcomePage.defaultProps = {
-    importJson: {}
-};
 export default WelcomePage;

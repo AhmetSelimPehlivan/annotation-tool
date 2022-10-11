@@ -47,12 +47,6 @@ io.on("connection", (socket) => {
   socket.on("available_frame_count", message => {
     socket.broadcast.emit("recieve-available_frame_count",message)
   })
-  /*socket.broadcast.on("sendGetFrame", user_name =>{
-    console.log(user_name)
-  //  socket.broadcast.emit("")
-  })*/
 });
-
-//S3 Bucket Load
 
 server.listen(process.env.PORT)

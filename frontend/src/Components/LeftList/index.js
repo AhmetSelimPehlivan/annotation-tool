@@ -2,7 +2,6 @@ import ScLeftList from './ScLeftList';
 import { REGION_SHAPE } from '../../Constants';
 import {prototype, string} from 'prop-types';
 import Tool from '../Tool';
-import PointCordinates from '../PointCordinates';
 import Attributes from '../Attributes';
 const LeftList = ({onSelect, selectedTool, onSelectedType}) => {
     return (
@@ -17,10 +16,6 @@ const LeftList = ({onSelect, selectedTool, onSelectedType}) => {
                <li>
                     <p className="list-header">Attributes</p>
                     <Attributes onSelect={onSelectedType}/>
-               </li>
-               <li>
-                    <p className="list-header">Point Cordinates</p>
-                    <PointCordinates/>
                </li>
             </ul>
         </ScLeftList>

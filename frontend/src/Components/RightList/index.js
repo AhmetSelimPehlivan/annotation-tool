@@ -2,7 +2,7 @@ import ScRightList from './ScRightList';
 import {prototype, array} from 'prop-types';
 import { useMemo } from 'react';
 
-const RightList = ({PoseNames,frame_interval,onSelect}) => {
+const RightList = ({imageID,frame_interval,onSelect}) => {
     
     const list_item_Renderer = (item) => { console.log("AAA")
         if (item === undefined) return
@@ -19,11 +19,11 @@ const RightList = ({PoseNames,frame_interval,onSelect}) => {
                <li className='ImageList'>
                     <p className='ImageName'>Image Name</p>
                     <ul>
-                        {PoseNames.map((name,index) => 
+                        {imageID.map((name,index) => 
                             <li className='Pose'>{name}
                                 <ul>
                                     {list_item_Renderer(frame_interval[index]).map((id) => 
-                                        <li className='Frame' onClick={() => onSelect(index,id)}>Frame {id}</li>)}
+                                        <li className='Frame' onClick={() => onSelect(name,index,id)}>Frame {id}</li>)}
                                 </ul>
                             </li>
                         )}
@@ -34,13 +34,13 @@ const RightList = ({PoseNames,frame_interval,onSelect}) => {
     );
 }
 RightList.propTypes = {
-    PoseNames: array,
+    imageID: array,
     frame_interval: array,
     onSelect: prototype
   };
   
 RightList.defaultProps = {
-    PoseNames: [],
+    imageID: [],
     frame_interval: [],
     onSelect: f => f
 };

@@ -1,11 +1,11 @@
 const mongoose = require('mongoose');
 
 const TaskSchema = new mongoose.Schema({
-    image_name:{
+    pose_name:{
         type: String,
         required: true
     },
-    pose_name:{
+    image_id:{
         type: Array,
         required: true
     },

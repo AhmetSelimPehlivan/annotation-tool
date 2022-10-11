@@ -1,30 +1,26 @@
 import Styled from "styled-components";
 const ScCard = Styled.div`
-    background-color: var(--ds-background-accent-gray-subtlest,#ebecf0);
-    border-radius: 5px;
-    box-sizing: border-box;
-    margin: 30px 40px;
-    margin-right: 0px;
     .list{
         display: flex;
-        align-items: flex-start;
-        flex-direction: column;
-        width: 300px;
-        margin: 15px;
+        box-sizing: border-box;
+        justify-content: space-between;
+        background: border-box;
+        flex-wrap: wrap;
         .Pose{
             display: flex;
             flex-direction: column;
+            align-self: center;
             background-color: var(--ds-surface-raised,#fff);
             border-radius: 3px;
             box-shadow: var(--ds-shadow-raised,0 1px 0 #091e4240);
             margin-bottom: 8px;
-            width: 100%;
+            width: 96%;
             min-height: 20px;
             text-decoration: none;
             p{
                 display: flex;
                 margin: 10px;
-                font-size: 15px;
+                font-size: 12px;
             }
             .list-Card{
                 display: flex;
@@ -59,10 +55,20 @@ const ScCard = Styled.div`
                 }
             }
         }
+        .image-Name{
+            margin: 10px 15px;
+            font-size: 16px;
+        }
+        .image-list{
+            width: 300px;
+            margin: 10px 0px 0px 10px;
+            display: flex;
+            flex-direction: column;
+            background-color: var(--ds-background-accent-gray-subtlest,#ebecf0);
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
     }
-    .image-Name{
-        margin: 10px 15px;
-        font-size: 20px;
-    }
+
 `;
 export default ScCard;

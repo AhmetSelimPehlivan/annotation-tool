@@ -2,34 +2,6 @@ import trJson from '../Assets/trial.json'
 import { ATTRIBUTE_CONNECTIONS } from '../Constants/attributeTypes';
 import Axios from '../Api/axios'
 
-const addImage = async (imageName, poseNames, available_frame_count) => {
-  try {
-  await Axios.post('/addImage',{
-      image_name:  imageName,
-      poses:  poseNames,
-      total_frame_count: available_frame_count,
-      available_frame_count: available_frame_count,
-      });
-  } catch (error) {
-    console.log("error ",error)
-  }
-  console.log("cong")
-}
-
-export const ImportJson = (file) => {
-  const poseNames = []
-  const frameList = []
-  const pose = trJson.MetaInfo.records
-  pose.map((item) => {
-    const frame = []
-    poseNames.push(item.name)
-    item.records.map((index) => frame.push(index.records.frameID))
-    frameList.push(frame)
-  }) 
-    addImage("imageName", poseNames, GetFrameLengths(frameList))
-  return {poseNames,frameList}
-}
-
 export const GetFrameIntervals = (Frames) =>{
   let frames = []
   Frames.map((element,index) =>{
@@ -51,8 +23,21 @@ export const GetFrameLengths = (Frames) =>{
   return frames
 }
 
-export const GetFrame = (poseIndex,frameIndex) =>{
-  const pose = trJson.MetaInfo.records[poseIndex].records[frameIndex].records
+export const GetFrame = async(poseName,image_id,frameIndex) =>{
+  try {
+    console.log("GetFrame")
+    await Axios.post('/getFrame',{
+      poseName: poseName,
+    }).then((response) =>{
+        console.log(response,"resp")
+       // setframe_interval(response.data.tasks[0].frame_interval)
+       // setimageID(response.data.tasks[0].image_id)
+
+    });
+  } catch (error) {
+      console.log("error ",error)
+  }
+/*
   let lines = []
   let point = []
   let counter = 0
@@ -62,11 +47,11 @@ export const GetFrame = (poseIndex,frameIndex) =>{
         item.map((att,index) =>{
           const frame = pose.keypoints.find(({bodyPart}) => bodyPart === att)
           if(index > 0)
-            lines.push({previous_id: counter-1, next_id: counter, x_start:point[point.length-1].x, y_start:point[point.length-1].y, x_end:frame.x/4, y_end:frame.y/4})
-          point.push({id: counter, x: frame.x/4, y: frame.y/4 })
+            lines.push({previous_id: counter-1, next_id: counter, x_start:point[point.length-1].x, y_start:point[point.length-1].y, x_end:frame.x/3, y_end:frame.y/3+10})
+          point.push({id: counter, x: frame.x/3, y: frame.y/3+10 })
           counter++
         })
     })
   }
-  return {point, lines}
+  return {point, lines}*/
 }

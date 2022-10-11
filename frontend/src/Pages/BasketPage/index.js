@@ -51,10 +51,10 @@ const onPick = async (image_Name,pose_name,pose_index,frame_start,frame_req)=>{
     return (
         <ScBasketPage>
             <Navbar/>
-            <div className='main'>
+            <div className='main'>{console.log(tasks)}
                 {
-                    tasks.map((task) =>
-                        <Card name={task.image_name} poseNames={task.pose_name} frame_count={task.finished_frame_count} available_frame_count={task.frame_interval} isBasket={true} onPick={onPick}/>
+                    tasks.map((task,index) =>
+                        <Card pose_name={task.pose_name} image_id={task.image_id} frame_count={task.finished_frame_count} available_frame_count={task.frame_interval} isBasket={true} onPick={onPick}/>
                     )
                 }
             </div>
