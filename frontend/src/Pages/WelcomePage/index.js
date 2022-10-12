@@ -13,10 +13,10 @@ const WelcomePage = () => {
     const [cardProps,setCardProps] = useState({})
 
     socket.on("recieve-available_frame_count", message =>{
-        //console.log(`You available_frame_count :, ${message}`)
         setCardProps(prevProps => ({...prevProps, available_frame_count: message})) 
     })
-    useEffect(() => {
+    
+    useEffect(() => { console.log("Socket Connect useEffect")
         async function fetchData(){
             try {
                 await Axios.get('/getImage').then((response) =>{

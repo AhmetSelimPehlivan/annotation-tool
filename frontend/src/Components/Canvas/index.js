@@ -49,6 +49,8 @@ useEffect(() => {
     else if( newLine.node === "external_end")
       setLines([...lines, {previous_id: newLine.previous_id-1, next_id: newLine.previous_id, x_start:newLine.x_start, y_start:newLine.y_start, x_end:currentPoint.x, y_end:currentPoint.y}]);
   }
+
+
 },[newLine,currentPoint,enterPress]);
 
 useEffect(() => {
@@ -91,7 +93,7 @@ const onSubmit = async() =>{
     });*/
   
   //dispatch(setPointsArray(point))
-  dispatch(setLinesArray(lines))
+  //dispatch(setLinesArray(lines))
 }
 
 const removeLine = (drag, prev_id, nxt_id) => {

@@ -1,25 +1,22 @@
 import { REGION_TYPES } from './regionTypes';
 export const handleDrag = ({e, setcurrentPoint}) => {
-  const currentPoint = e.currentTarget.getPointerPosition()
-  setcurrentPoint({x:currentPoint.x,y:currentPoint.y})
+  const currentPoint = e.target.attrs
+  setcurrentPoint({x:currentPoint.x, y:currentPoint.y})
 }
 
 export const handleDragStart = ({e, setIsDraging, removeLine}) => {
-  console.log("dragStart")
   setIsDraging(true)
   const pt = e.target.attrs
-  console.log(pt)
   if(pt.id !== null)
     removeLine(true, pt.id-0, (pt.id-0)+1)
 }
 
 export const handleDragEnd = ({e, setLineCount, setNewLine, lineCount, newLine})=>{
-  console.log("handleDragEnd")
   if(newLine.node === "internal"){
     setLineCount(lineCount+2)
     setNewLine({node: false})
   }
-  else if(newLine.node.indexOf("external") > -1){ console.log("add")
+  else if(newLine.node.indexOf("external") > -1){
     setLineCount(lineCount+1)
     setNewLine({node: false})
   }
@@ -32,7 +29,6 @@ export const handleMouseMove = ({e, setcurrentPoint, firstClick}) => {
 };
 
 export const handleMouseUp = ({e, setPoint, setPointCounter, setLineCount, setfirstClick, removeLine, point, pointCounter, firstClick, lineCount, selectedTool, setIsDraging, isDraging}) => {
-  console.log("MouseUp")
   if (isDraging){
     setIsDraging(false)
     return
@@ -55,7 +51,7 @@ export const handleMouseUp = ({e, setPoint, setPointCounter, setLineCount, setfi
     if(pt.id !== null){
       removeLine(false, pt.id-0, (pt.id-0)+1)
       setPoint(point.filter(({id}) => id !== (pt.id-0)))
-      console.log("Eraser ",point, " / " ,pt.id, " * ",pt)
+      // console.log("Eraser ",point, " / " ,pt.id, " * ",pt)
     }
   }
 };
