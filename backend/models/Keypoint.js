@@ -1,6 +1,10 @@
 const mongoose = require('mongoose');
 
 const KeypointSchema = new mongoose.Schema({
+    pose_name:{
+        type: String,
+        required: true
+    },
     image_id:{
         type: String,
         required: true

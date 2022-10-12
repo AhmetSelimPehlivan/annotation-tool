@@ -22,7 +22,6 @@ const ScRightList = Styled.div`
 
         .ImageList{
             width: 180px;
-            height: 20px;
             margin: 10px;
             .ImageName{
                 width: 100%;

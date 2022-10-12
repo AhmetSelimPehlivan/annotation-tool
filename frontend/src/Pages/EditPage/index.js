@@ -6,18 +6,18 @@ import Canvas from '../../Components/Canvas';
 import LeftList from '../../Components/LeftList';
 import RightList from '../../Components/RightList';
 import Axios from '../../Api/axios'
-import {GetFrame} from '../../ImportJson';
-import { selectCurrentUser } from '../../Api/Redux/authReducer';
 import { EditWidowSize } from '../../Constants';
+import { selectCurrentUser } from '../../Api/Redux/authReducer';
+import { ATTRIBUTE_CONNECTIONS } from '../../Constants/attributeTypes'
 import {Caches} from '../../Constants/caches'
 
 const EditPage = () => {
 const userName = useSelector(selectCurrentUser)
 const [selectedTool, setselectedTool] = useState("");
 const [selectedType, setselectedType] = useState("");
-const [frame_interval, setframe_interval] = useState([])
-const [imageID, setimageID] = useState([])
 const [frame, setFrame] = useState()
+const [tasks, setTasks] = useState([])
+
 
   useEffect(() => {
       console.log("UseEffect Requestsss ",userName)
@@ -25,9 +25,8 @@ const [frame, setFrame] = useState()
           try {
               await Axios.post('/getTask',{
                   dedicated_user: userName,
-              }).then((response) =>{
-                  setframe_interval(response.data.tasks[0].frame_interval)
-                  setimageID(response.data.tasks[0].image_id)
+              }).then((response) =>{ console.log(response.data)
+                    setTasks(response.data.tasks)
               });
           } catch (error) {
               console.log("error ",error)
@@ -35,7 +34,37 @@ const [frame, setFrame] = useState()
       }
       fetchData()
   },[]);
-
+  
+  const GetFrame = async(poseName,image_id,frameIndex) =>{
+    try {
+      await Axios.post('/getKeypoints',{
+        pose_name: poseName,
+        image_id: image_id,
+        frameIndex: frameIndex
+      }).then((response) =>{
+          const keypoints = response.data.Keypoints
+          let lines = []
+          let point = []
+          let counter = 0
+          if(keypoints.length !== 0){ 
+            ATTRIBUTE_CONNECTIONS.map((item,index) => {
+                item.map((att,index) =>{
+                  const frame = keypoints.find(({bodyPart}) => bodyPart === att)
+                  console.log("frame ",index," - ",frame)
+                  if(index > 0)
+                    lines.push({previous_id: counter-1, next_id: counter, x_start:point[point.length-1].x, y_start:point[point.length-1].y, x_end:frame.xAxis/2, y_end:frame.yAxis/2+10})
+                  point.push({id: counter, x: frame.xAxis/2, y: frame.yAxis/2+10 })
+                  counter++
+                })
+            })
+          }
+          setFrame({point, lines})
+      });
+    } catch (error) {
+        console.log("error ",error)
+    }
+  }
+  
   const addCache = async (cacheName,data) =>{
     console.log("hAYD")
     localStorage.setItem(cacheName,JSON.stringify(data))
@@ -57,7 +86,7 @@ const [frame, setFrame] = useState()
                 <div className='Image'/>
                 <Canvas window_size={EditWidowSize} selectedTool={selectedTool} selectedType={selectedType} importJson={frame}/>
             </div>
-            <RightList imageID={imageID} frame_interval={frame_interval}  onSelect={(poseName,image_id,frameIndex) => setFrame(GetFrame(poseName,image_id,frameIndex))}/>
+            <RightList tasks={tasks} onSelect={(poseName,image_id,frameIndex) => GetFrame(poseName,image_id,frameIndex)}/>
         </ScEditPage>
         </>
     );

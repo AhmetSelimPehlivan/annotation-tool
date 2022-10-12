@@ -59,6 +59,7 @@ useEffect(() => {
 
 useEffect(() => {
   if(Object.keys(importJson).length !== 0){
+    console.log(importJson)
     setPoint(importJson.point)
     setLines(importJson.lines)
     setLineCount(importJson.lines.length)

@@ -69,23 +69,19 @@ const ImportJson = (name,image_id,data) => {
   for (let index = 0; index < data.records.length; index++) {
     let points = []
     for (let i = 0; i < data.records[index].keypoints.length; i++)
-      points.push({xAxis: data.records[index].keypoints[i].xAxis, yAxis: data.records[index].keypoints[i].yAxis})
+      points.push({xAxis: data.records[index].keypoints[i].xAxis, yAxis: data.records[index].keypoints[i].yAxis, bodyPart: data.records[index].keypoints[i].bodyPart})
     keypoints.push(points)
   }
   
   addNewPosesToDb(name, image_id, data.records.length)
-  addNewKeypointsToDb(image_id,keypoints,keypoints.length)
-}
-const ImportKeypointsJson = (data) => {
-  //addNewPosesToDb(name, image_id, data.records.length)
-  console.log("data ",data)
+  addNewKeypointsToDb(name,image_id,keypoints,keypoints.length)
 }
 
 const uploadBucketToS3 = async (bucketName) => {
   const s3 = bucket_instance();
   const params = {
     Bucket: bucketName,
-    MaxKeys: 10
+    MaxKeys: 10 
   }
   const bucketData = s3.listObjects(params).promise()
   return bucketData
@@ -100,8 +96,9 @@ const addNewPosesToDb = async (pose_name,image_id,frame_count) =>{
   });
 }
 
-const addNewKeypointsToDb = async (image_id,points,frame_count) =>{
+const addNewKeypointsToDb = async (name,image_id,points,frame_count) =>{
   await Keypoint.create({
+    pose_name: name,
     image_id: image_id,
     points: points,
     frame_count: frame_count,
