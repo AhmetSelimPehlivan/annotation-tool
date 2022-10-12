@@ -19,13 +19,19 @@ module.exports.readFromBucket = async(req, res) => {
 }
 
 module.exports.uploadToBucket = async(req, res) => {
-    
+    try {
+        //console.log("req ",req.body.lines)
+        
+    } catch (error) {
+        
+    }
+    /*
     try {
         const bucketData = await getBucketFromS3(process.env.AWS_UPLOAD_BUCKET_NAME);
         const fileStream = fs.createReadStream(file.path)
 
         const uploadParams = {
-            Bucket: bucketName,
+            Bucket: process.env.AWS_UPLOAD_BUCKET_NAME,
             Body: fileStream,
             Key: file.filename
           }
@@ -33,25 +39,5 @@ module.exports.uploadToBucket = async(req, res) => {
         return s3.upload(uploadParams).promise()
     } catch (error) {
         res.status(500).send([]);
-    }
+    } */
 }
-
-  const processS3File = () => {
-    return new Promise((resolve, reject) => {
-      console.log("File read from S3.");
-      let records = [];
-      try {
-        let readStream = S3.getObject(s3Config).createReadStream();
-        let lineReader = readLine.createInterface({ input: readStream });
-        lineReader.on("line", line => {
-           records.push(line);
-        }).on("close", () => {
-           console.log("Finished processing S3 file.");
-            resolve(records);
-       });
-      } catch (err) {
-      console.log("Error: ", err);
-      reject(err);
-        }
-    })
- }

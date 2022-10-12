@@ -7,7 +7,7 @@ const editReducer = createSlice({
         setPointsArray: (state, action) => {    
             state.points = action.payload
         },
-        setLinesArray: (state, action) => {    
+        setLinesArray: (state, action) => {
             state.lines = action.payload
         },
     }

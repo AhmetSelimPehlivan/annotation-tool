@@ -1,4 +1,6 @@
 import Axios from '../Api/axios'
+import { useSelector } from 'react-redux'
+import { selectLines } from '../Api/Redux/editReducer';
 import { ATTRIBUTE_CONNECTIONS } from '../Constants/attributeTypes'
 
 export const GetFrameIntervals = (Frames) =>{
@@ -21,6 +23,7 @@ export const GetFrameLengths = (Frames) =>{
   })
   return frames
 }
+
 export const GetFrame = async(poseName,image_id,frameIndex,setFrame) =>{
   try {
     await Axios.post('/getKeypoints',{
@@ -48,4 +51,10 @@ export const GetFrame = async(poseName,image_id,frameIndex,setFrame) =>{
   } catch (error) {
       console.log("error ",error)
   }
+}
+
+export const Upload_file = (pose_name,image_id,frameIndex,setFrame) =>{
+  const lines = useSelector(selectLines)
+  console.log(lines)
+  //const data = {poseData: pose_name, records: []}
 }

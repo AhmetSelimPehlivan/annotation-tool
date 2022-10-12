@@ -50,7 +50,6 @@ const [tasks, setTasks] = useState([])
             ATTRIBUTE_CONNECTIONS.map((item,index) => {
                 item.map((att,index) =>{
                   const frame = keypoints.find(({bodyPart}) => bodyPart === att)
-                  console.log("frame ",index," - ",frame)
                   if(index > 0)
                     lines.push({previous_id: counter-1, next_id: counter, x_start:point[point.length-1].x, y_start:point[point.length-1].y, x_end:frame.xAxis/2, y_end:frame.yAxis/2+10})
                   point.push({id: counter, x: frame.xAxis/2, y: frame.yAxis/2+10 })

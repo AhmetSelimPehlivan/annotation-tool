@@ -1,10 +1,12 @@
 import ScCanvas from './ScCanvas';
 import { Stage, Layer, Line , Circle } from "react-konva";
-import {useState, useEffect} from "react";
-import {string, dict, bool} from 'prop-types';
-import { ATTRIBUTE_TYPES } from '../../Constants';
+import { useState, useEffect } from "react";
+import { string, dict, bool } from 'prop-types';
 import { useDispatch } from 'react-redux';
+import { ATTRIBUTE_TYPES } from '../../Constants';
+import Axios from '../../Api/axios'
 import { setPointsArray, setLinesArray } from '../../Api/Redux/editReducer';
+import { Upload_file } from '../../ImportJson'
 import { handleDrag, handleDragStart, handleDragEnd, handleMouseMove, handleMouseUp} from '../../Constants/utils';
 
 const Canvas = ({window_size, selectedTool, selectedType, importJson, isSubmit}) => {
@@ -22,8 +24,6 @@ const [point, setPoint] = useState([]);
 const [pointCounter, setPointCounter] = useState(0);
 
 useEffect(() => {
-  //if(point.length > 0)
-    //console.log(point[point.length-1].getAbsolutePosition())
   if (lineCount < lines.length){
     if(newLine.node === "internal")
       lines.pop()
@@ -79,8 +79,18 @@ useEffect(() => {
   };
 }, []);
 
-const onSubmit = () =>{
-  dispatch(setPointsArray(point))
+const onSubmit = async() =>{
+  //Upload_file()
+  //console.log(JSON.parse(lines.toString))
+  /*
+  await Axios.post('/upload-to-s3',{
+    point: point,
+    lines: lines,
+    }, { withCredentials: true }).then((response) =>{
+      console.log("OKKEY")
+    });*/
+  
+  //dispatch(setPointsArray(point))
   dispatch(setLinesArray(lines))
 }
 

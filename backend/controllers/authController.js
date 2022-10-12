@@ -36,6 +36,7 @@ module.exports.login_post = async (req, res) => {
     try {
         const user = await User.login(req.body.user_name, req.body.password);
         const token = createToken(user.user_name, user.role ,user.password);
+        req.session.isAuth = true
         res.cookie('jwt', token, { httpOnly: true });
         res.status(200).send({ accessToken: token, message: "logged in successfully" });
     } catch (error) {
