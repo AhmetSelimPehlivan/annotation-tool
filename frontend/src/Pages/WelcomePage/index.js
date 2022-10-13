@@ -1,22 +1,23 @@
 import { useState, useEffect, useCallback } from 'react';
-import io from 'socket.io-client'
 import { useSelector } from 'react-redux'
 import ScWelcomePage from './ScWelcomePage';
 import Navbar from '../../Components/Navbar';
 import Card from '../../Components/Card';
 import { selectCurrentUser } from '../../Api/Redux/authReducer';
 import Axios from '../../Api/axios'
+import {socket} from "../../Constants/socket";
 
 const WelcomePage = () => {
-    const socket = io("http://localhost:3001/")
     const userName = useSelector(selectCurrentUser)
     const [cardProps,setCardProps] = useState({})
 
-    socket.on("recieve-available_frame_count", message =>{
-        setCardProps(prevProps => ({...prevProps, available_frame_count: message})) 
-    })
-    
-    useEffect(() => { console.log("Socket Connect useEffect")
+    useEffect(() => {
+        socket.on("connect", ()=>{
+            console.log(`You connected :, ${socket.id}`)
+        })
+        socket.on("recieve-available_frame_count", message =>{
+            setCardProps(prevProps => ({...prevProps, available_frame_count: message})) 
+        })
         async function fetchData(){
             try {
                 await Axios.get('/getImage').then((response) =>{
@@ -27,9 +28,7 @@ const WelcomePage = () => {
             }
         }
         fetchData()
-        socket.on("connect", ()=>{
-            console.log(`You connected :, ${socket.id}`)
-        })
+        return () => {socket.off('disconnect')};
     },[]);
 
     const onPick = async (pose_name,image_id,pose_index,frame_start,frame_req)=>{

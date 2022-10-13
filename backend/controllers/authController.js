@@ -26,6 +26,7 @@ module.exports.signup_post = async (req, res) => {
         const user = await User.create({ ...req.body });
         const token = createToken(user.user_name, user.role, user.password);
         res.cookie('jwt', token, { httpOnly: true });
+        res.cookie('isLogin', true, { httpOnly: true });
         res.status(201).send({ message: "User created successfully" });
     } catch (error) {
         res.status(500).send({ message: "!Internal Server Error\n",error });

@@ -3,7 +3,9 @@
     "start": "nodemon app.js"
   },
   "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.186.0",
     "@aws-sdk/client-s3": "^3.185.0",
+    "@aws-sdk/lib-dynamodb": "^3.186.0",
     "aws-sdk": "^2.1229.0",
     "bcrypt": "^5.0.1",
     "body-parser": "^1.20.0",

@@ -2,7 +2,7 @@ const Image = require('../models/Image');
 
 // controller actions
 module.exports.add_Image_post = async (req, res) => {
-    try { console.log(req.body)
+    try {// console.log(req.body)
         const image = await Image.create({ ...req.body });
         res.status(201).send({ message: "Image is added successfully" });
     } catch (error) {
@@ -22,8 +22,6 @@ module.exports.get_Image_get = async (req, res) => {
             frame_counts.push(images[index].total_frame_count)
         }
         uniqueArray = poseNames.filter(function(item, pos,index) {
-                if(poseNames.indexOf(item) === pos)
-                    console.log(item, pos)
                 //console.log("i ",poseNames.indexOf(item) === pos)
             return poseNames.indexOf(item) === pos;
         })

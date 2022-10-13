@@ -2,6 +2,10 @@ const Image = require('../models/Image');
 const Keypoint = require('../models/Keypoint');
 const zlib = require("zlib");
 const { S3Client, GetObjectCommand, ListObjectsCommand } = require("@aws-sdk/client-s3");
+const { DynamoDBClient } = require("@aws-sdk/client-dynamodb");
+const { DynamoDBDocument } = require("@aws-sdk/lib-dynamodb");
+const ddbClient = new DynamoDBClient({ region: process.env.AWS_FETCH_BUCKET_REGION  });
+const dynamoClient = DynamoDBDocument.from(ddbClient);
 // Load the AWS SDK for Node.js
 var AWS = require('aws-sdk');
 // Set the region
@@ -97,12 +101,19 @@ const addNewPosesToDb = async (pose_name,image_id,frame_count) =>{
 }
 
 const addNewKeypointsToDb = async (name,image_id,points,frame_count) =>{
-  await Keypoint.create({
-    pose_name: name,
-    image_id: image_id,
-    points: points,
-    frame_count: frame_count,
-  });
+  try{
+    await dynamoClient.put({
+        TableName: 'Keypoints',
+        Item:{
+            pose_name: name,
+            image_id: image_id,
+            points: points,
+            frame_count: frame_count
+        }
+      });
+  }catch (e) {
+      console.log('cannot insert score parameters!');
+  }
 }
 
 module.exports = {getBucketFromS3}
