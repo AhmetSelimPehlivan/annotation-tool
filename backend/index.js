@@ -48,11 +48,9 @@ app.use(completedTaskRoute)
 app.use(s3Route);
 
 AWS.config.update({
-  "region": process.env.AWS_UPLOAD_BUCKET_REGION,
-  "endpoint": "http://dynamodb.us-east-1.amazonaws.com",
+  "region": "eu-central-1",
   "accessKeyId": process.env.AWS_ACCESS_KEY_ID, "secretAccessKey":  process.env.AWS_SECRET_ACCESS_KEY
 });
-
 mongoose.connect(process.env.DB_CONNECTION, {
     useNewUrlParser: true, 
     useUnifiedTopology: true

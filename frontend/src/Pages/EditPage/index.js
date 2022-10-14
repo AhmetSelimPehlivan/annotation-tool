@@ -15,6 +15,7 @@ const EditPage = () => {
 const userName = useSelector(selectCurrentUser)
 const [selectedTool, setselectedTool] = useState("");
 const [selectedType, setselectedType] = useState("");
+const [lastEdit, setlastEdit] = useState({})
 const [frame, setFrame] = useState()
 const [tasks, setTasks] = useState([])
 
@@ -57,6 +58,7 @@ const [tasks, setTasks] = useState([])
                 })
             })
           }
+          setlastEdit({pose_name: poseName, image_id: image_id})
           setFrame({point, lines})
       });
     } catch (error) {
@@ -64,14 +66,31 @@ const [tasks, setTasks] = useState([])
     }
   }
   
-  const addCache = async (cacheName,data) =>{
-    console.log("hAYD")
-    localStorage.setItem(cacheName,JSON.stringify(data))
-    const cache = await caches.open(cacheName);
-    cache.add(data).then(() => {
-        console.log("Added Succesfully")
-      })
-    }
+  const onSubmit = async(lines) =>{
+    console.log("lines ",lines)
+    await Axios.post('/getCompletedTask',{
+      pose_name: lastEdit.pose_name,
+      image_id: lastEdit.image_id}).then(async (response) =>{
+      const pose_array = response.data.data.Item;
+      console.log("response ",lastEdit.pose_name,"-",pose_array," ")
+    if(pose_array === undefined || pose_array.length < 1)
+        await Axios.post('/addCompletedTask',{
+          pose_name: lastEdit.pose_name,
+          image_id: lastEdit.image_id,
+          poses: [lines],
+          frame_count: 1
+          });
+      else
+        { pose_array.poses.push(lines)
+          await Axios.post('/updateCompletedTask',{
+          pose_name: lastEdit.pose_name,
+          image_id: lastEdit.image_id,
+          poses: pose_array.poses,
+          frame_count: pose_array.poses.length
+          });
+        }
+    });
+  }
 
     return (
         <>
@@ -83,7 +102,7 @@ const [tasks, setTasks] = useState([])
                 onSelectedType={(type) => {setselectedType(type)}} />
             <div className="main">
                 <div className='Image'/>
-                <Canvas window_size={EditWidowSize} selectedTool={selectedTool} selectedType={selectedType} importJson={frame}/>
+                <Canvas window_size={EditWidowSize} selectedTool={selectedTool} selectedType={selectedType} importJson={frame} onSubmit={(lines) => onSubmit(lines)}/>
             </div>
             <RightList tasks={tasks} onSelect={(poseName,image_id,frameIndex) => GetFrame(poseName,image_id,frameIndex)}/>
         </ScEditPage>

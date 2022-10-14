@@ -9,7 +9,7 @@ import { setPointsArray, setLinesArray } from '../../Api/Redux/editReducer';
 import { Upload_file } from '../../ImportJson'
 import { handleDrag, handleDragStart, handleDragEnd, handleMouseMove, handleMouseUp} from '../../Constants/utils';
 
-const Canvas = ({window_size, selectedTool, selectedType, importJson, isSubmit}) => {
+const Canvas = ({window_size, selectedTool, selectedType, importJson, onSubmit}) => {
 
 const dispatch = useDispatch()
 const [isDraging, setIsDraging] = useState(false);
@@ -81,20 +81,6 @@ useEffect(() => {
   };
 }, []);
 
-const onSubmit = async() =>{
-  //Upload_file()
-  //console.log(JSON.parse(lines.toString))
-  /*
-  await Axios.post('/upload-to-s3',{
-    point: point,
-    lines: lines,
-    }, { withCredentials: true }).then((response) =>{
-      console.log("OKKEY")
-    });*/
-  
-  //dispatch(setPointsArray(point))
-  //dispatch(setLinesArray(lines))
-}
 
 const removeLine = (drag, prev_id, nxt_id) => {
   const line = lines.find(({previous_id, next_id}) => previous_id === (prev_id) && next_id === (nxt_id))
@@ -152,7 +138,7 @@ const removeLine = (drag, prev_id, nxt_id) => {
               )}
             </Layer>
           </Stage>
-          <button className='Submit-Button' onClick={onSubmit}>Submit</button>
+          <button className='Submit-Button' onClick={() => onSubmit(lines)}>Submit</button>
       </ScCanvas>
       </>
     );
@@ -162,7 +148,7 @@ Canvas.propTypes = {
   selectedTool: string,
   selectedType: string,
   importJson: dict,
-  isSubmit: bool
+  onSubmit: bool
 };
 
 Canvas.defaultProps = {
@@ -170,6 +156,6 @@ Canvas.defaultProps = {
   selectedTool: "",
   selectedType: "",
   importJson: {},
-  isSubmit: false
+  onSubmit: f => f
 };
 export default Canvas;

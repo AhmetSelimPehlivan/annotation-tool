@@ -1,15 +1,16 @@
 const Image = require('../models/Image');
-const Keypoint = require('../models/Keypoint');
 const zlib = require("zlib");
+var AWS = require("aws-sdk");
 const { S3Client, GetObjectCommand, ListObjectsCommand } = require("@aws-sdk/client-s3");
-const { DynamoDBClient } = require("@aws-sdk/client-dynamodb");
-const { DynamoDBDocument } = require("@aws-sdk/lib-dynamodb");
-const ddbClient = new DynamoDBClient({ region: process.env.AWS_FETCH_BUCKET_REGION  });
-const dynamoClient = DynamoDBDocument.from(ddbClient);
-// Load the AWS SDK for Node.js
-var AWS = require('aws-sdk');
+//const { DynamoDBClient } = require("@aws-sdk/client-dynamodb");
+//const { DynamoDBDocument } = require("@aws-sdk/lib-dynamodb");
+AWS.config.update({
+  "region": "eu-central-1",
+  "accessKeyId": process.env.AWS_ACCESS_KEY_ID, "secretAccessKey":  process.env.AWS_SECRET_ACCESS_KEY
+});
+let dynamoClient = new AWS.DynamoDB.DocumentClient();
+
 // Set the region
-AWS.config.update({region: 'REGION'});
 
 const bucket_instance = () =>{
     s3 = new S3Client({
@@ -29,7 +30,7 @@ const s3 = bucket_instance();
 const bucketData = await s3.send(new ListObjectsCommand(params));
 const newFiles = await getNewFiles(bucketData.Contents)
 
-  for (let j = 0; j < newFiles.length; j++)
+  for (let j = 0; j < 20/*newFiles.length*/; j++)
     ImportJson(newFiles[j].pose_name, newFiles[j].file_id ,JSON.parse((await unzipFromS3(s3,newFiles[j].pose_name + "/" + newFiles[j].file_id, bucketName)).toString('utf-8')))
 }
 
@@ -102,15 +103,21 @@ const addNewPosesToDb = async (pose_name,image_id,frame_count) =>{
 
 const addNewKeypointsToDb = async (name,image_id,points,frame_count) =>{
   try{
-    await dynamoClient.put({
-        TableName: 'Keypoints',
+     dynamoClient.put({
+        TableName: 'Keypoint',
         Item:{
             pose_name: name,
             image_id: image_id,
             points: points,
             frame_count: frame_count
         }
-      });
+      }, function (err, data) {
+        if (err) {
+            console.log("addNewKeypointsToDb::save::error - " + JSON.stringify(err, null, 2));                      
+        } else {
+            console.log("addNewKeypointsToDb::save::success" );                      
+        }
+    });
   }catch (e) {
       console.log('cannot insert score parameters!');
   }

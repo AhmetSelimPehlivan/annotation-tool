@@ -1,21 +1,31 @@
-const Keypoint = require('../models/Keypoint');
-const {getKeypointsFromS3} = require('../services/s3_bucket')
-
+var AWS = require("aws-sdk");
+AWS.config.update({
+    "region": "eu-central-1",
+    "accessKeyId": process.env.AWS_ACCESS_KEY_ID, "secretAccessKey":  process.env.AWS_SECRET_ACCESS_KEY
+  });
+let docClient = new AWS.DynamoDB.DocumentClient();
 // controller actions
-module.exports.addKeypoint_post = async (req, res) => {
-    try {
-        const bucketData = await getKeypointsFromS3(process.env.AWS_FETCH_BUCKET_NAME);
-        res.status(201).send({ message: "Keypoint is added successfully" });
-    } catch (error) {
-        res.status(500).send({ message: "!Internal Server Error\n",error });
-    }
-}
 
 module.exports.getKeypoint_post = async (req, res) => {
     try {
-        const keypoints = await Keypoint.find({pose_name: req.body.pose_name, image_id: req.body.image_id})
-        res.status(201).send({Keypoints: keypoints[0].points[req.body.frameIndex], message: "Keypoints are gotten successfully" });
-   } catch (error) {
+        var params = {
+            TableName: "Keypoint",
+            Key: {
+                "pose_name":  req.body.pose_name,
+                "image_id": req.body.image_id
+            }
+        };
+        docClient.get(params, function (err, data) {
+            if (err) {
+                console.log("Keypoint::fetchOneByKey::error - " + JSON.stringify(err, null, 2));
+            }
+            else {
+                //console.log("Keypoint::fetchOneByKey::success - " + JSON.stringify(data, null, 2));
+                res.status(201).send({Keypoints: data.Item.points[req.body.frameIndex], message: "Keypoints are gotten successfully" });
+                
+            }
+        })
+    } catch (error) {
         res.status(500).send({ message: "!Internal Server Error\n",error });
     }
 }
