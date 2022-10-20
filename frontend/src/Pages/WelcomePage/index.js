@@ -3,14 +3,16 @@ import { useSelector } from 'react-redux'
 import ScWelcomePage from './ScWelcomePage';
 import Navbar from '../../Components/Navbar';
 import Card from '../../Components/Card';
-import { selectCurrentUser } from '../../Api/Redux/authReducer';
+import { selectCurrentUserName } from '../../Api/Redux/authReducer';
 import Axios from '../../Api/axios'
 import {socket} from "../../Constants/socket";
+import { GetPointAndLines } from '../../ImportJson';
 
 const WelcomePage = () => {
-    const userName = useSelector(selectCurrentUser)
+    console.log("11111")
+    const userName = useSelector(selectCurrentUserName)
     const [cardProps,setCardProps] = useState({})
-
+    console.log("USERR")
     useEffect(() => {
         socket.on("connect", ()=>{
             console.log(`You connected :, ${socket.id}`)
@@ -21,6 +23,7 @@ const WelcomePage = () => {
         async function fetchData(){
             try {
                 await Axios.get('/getImage').then((response) =>{
+                    console.log("resp ",response)
                     setCardProps({pose_name: response.data.pose_name, image_id: response.data.image_id, frame_count: response.data.frame_count, available_frame_count: response.data.available_frame_count})
                 });
             } catch (error) {
@@ -33,24 +36,31 @@ const WelcomePage = () => {
 
     const onPick = async (pose_name,image_id,pose_index,frame_start,frame_req)=>{
         try {
-            await Axios.post('/addTask',{
-                pose_name:  pose_name,
-                image_id:  image_id,
-                pose_index: pose_index,
-                frame_interval: {start:frame_start, end:(frame_start+frame_req)},
-                dedicated_user:  userName,
-                finished_frame_count:  0,
-            }).then( async () =>{
-               await Axios.post('/update_frame',{
+            await Axios.post('/getKeypoints',{
+                pose_name: pose_name,
+                image_id: image_id,
+                frame_start: frame_start,
+                frame_end: (frame_start+frame_req)
+              }).then( async(response) =>{
+                await Axios.post('/addTask',{
                     pose_name:  pose_name,
                     image_id:  image_id,
-                    pose_index: pose_index,
-                    minus_frame_count: frame_req
-                }).then(()=>{
-                cardProps.available_frame_count[pose_index] -=frame_req
-                socket.emit('available_frame_count',cardProps.available_frame_count)
-                setCardProps(prevProps => ({...prevProps, available_frame_count: cardProps.available_frame_count})) 
-            })})
+                    frames: GetPointAndLines(response.data.Keypoints),
+                    frame_interval: {start:frame_start, end:(frame_start+frame_req)},
+                    dedicated_user:  userName,
+                    finished_frame_count:  0,
+                }).then( async () =>{
+                   await Axios.post('/update_frame',{
+                        pose_name:  pose_name,
+                        image_id:  image_id,
+                        pose_index: pose_index,
+                        minus_frame_count: frame_req
+                    }).then(()=>{
+                    cardProps.available_frame_count[pose_index] -=frame_req
+                    socket.emit('available_frame_count',cardProps.available_frame_count)
+                    setCardProps(prevProps => ({...prevProps, available_frame_count: cardProps.available_frame_count})) 
+                })})
+              });
         } catch (error) {
             console.log("error ",error)
         }

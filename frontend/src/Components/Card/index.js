@@ -18,7 +18,7 @@ const Card = ({pose_name,image_id, frame_count, available_frame_count, isBasket,
                             <div className='card-info'>
                                 {isBasket
                                     ?<div className='card-info'>
-                                        <p className='Frame-Count'>Dedicated Frame: {available_frame_count[index].end-available_frame_count[index].start}</p>
+                                        <p className='Frame-Count'>Dedicated Frame: {available_frame_count.start} - {available_frame_count.end}</p>
                                         <p className='finished-info'>Finished: {frame_count[index]}</p>
                                     </div>
                                     :<div className='card-info'>
@@ -28,7 +28,7 @@ const Card = ({pose_name,image_id, frame_count, available_frame_count, isBasket,
                             </div>
                             <div className='pick-section'>
                                 { isBasket
-                                ?<input type='number' placeholder='0' min="1" max={(available_frame_count[index].end-available_frame_count[index].start)} onChange={(e)=>{ setGet_frame(e.target.value)}}></input>
+                                ?<input type='number' placeholder='0' min="1" max={(available_frame_count.end-available_frame_count.start)} onChange={(e)=>{ setGet_frame(e.target.value)}}></input>
                                 :<input type='number' placeholder='0' min="1" max={available_frame_count[index]} onChange={(e)=>{ setGet_frame(e.target.value)}}></input>
                                 }
                                 { isBasket ? <button className='remove-button'>Remove</button>

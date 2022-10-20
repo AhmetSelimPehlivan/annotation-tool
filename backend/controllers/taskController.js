@@ -3,25 +3,21 @@ const Task = require('../models/Task');
 // controller actions
 module.exports.addTask_post = async (req, res) => {
     try {
-        const user_tasks = await Task.find({pose_name: req.body.pose_name, dedicated_user: req.body.dedicated_user})
-        if(user_tasks.length > 0){
-            user_tasks[0].image_id.push(req.body.image_id)
-            user_tasks[0].pose_index.push(req.body.pose_index)
-            user_tasks[0].frame_interval.push(req.body.frame_interval)
-            user_tasks[0].finished_frame_count.push(req.body.finished_frame_count)
-            user_tasks[0].save()
-        }
-        else{console.log(req.body.pose_name)
+        const user_tasks = await Task.find({dedicated_user: req.body.dedicated_user})
+        if( user_tasks.length > 20)
+            res.status(201).send({ message: "UserStack is Full" });
+        else{
             await Task.create({
+                _id: user_tasks.length+1,
                 pose_name: req.body.pose_name,
-                image_id: [req.body.image_id],
-                pose_index: [req.body.pose_index],
-                frame_interval: [req.body.frame_interval],
+                image_id: req.body.image_id,
+                frames: req.body.frames.lines,
+                frame_interval: req.body.frame_interval,
                 dedicated_user: req.body.dedicated_user,
-                finished_frame_count: [req.body.finished_frame_count]
+                finished_frame_count: req.body.finished_frame_count
             });
+            res.status(201).send({ message: "Task is added successfully" });
         }
-        res.status(201).send({ message: "Task is added successfully" });
     } catch (error) {
         res.status(500).send({ message: "!Internal Server Error\n",error });
     }

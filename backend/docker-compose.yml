@@ -1,20 +1,22 @@
-version: '3.4'
+version: '3.8'
 
 services:
-  annotatortool:
-    container_name: annotatortool
-    image: annotatortool
-    build:
-      context: .
-      dockerfile: ./Dockerfile
-    environment:
-      NODE_ENV: production
+  app:
+    container_name: backend-container
+    restart: always
+    build: .
     ports:
-      - 7500:7500
-    links:
+      - 8001:4000
+    depends_on:
       - mongo
   mongo:
-    container_name: mongodb
-    image: mongo:latest 
+    container_name: mongo-backend
+    image: mongo
+    expose:
+      - "27017"
     ports:
       - "27017:27017"
+    volumes:
+      - backend:/data/db
+volumes:
+- backend: D:\tryogi\TrueYogi\annotator-tool

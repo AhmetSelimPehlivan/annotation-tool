@@ -4,9 +4,6 @@ import { useState, useEffect } from "react";
 import { string, dict, bool } from 'prop-types';
 import { useDispatch } from 'react-redux';
 import { ATTRIBUTE_TYPES } from '../../Constants';
-import Axios from '../../Api/axios'
-import { setPointsArray, setLinesArray } from '../../Api/Redux/editReducer';
-import { Upload_file } from '../../ImportJson'
 import { handleDrag, handleDragStart, handleDragEnd, handleMouseMove, handleMouseUp} from '../../Constants/utils';
 
 const Canvas = ({window_size, selectedTool, selectedType, importJson, onSubmit}) => {
@@ -49,8 +46,6 @@ useEffect(() => {
     else if( newLine.node === "external_end")
       setLines([...lines, {previous_id: newLine.previous_id-1, next_id: newLine.previous_id, x_start:newLine.x_start, y_start:newLine.y_start, x_end:currentPoint.x, y_end:currentPoint.y}]);
   }
-
-
 },[newLine,currentPoint,enterPress]);
 
 useEffect(() => {

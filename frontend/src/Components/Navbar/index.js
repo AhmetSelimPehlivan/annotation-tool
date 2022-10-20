@@ -1,7 +1,7 @@
 import {BrowserRouter as Router,useNavigate, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux'
 import React from 'react';
-import { selectCurrentUser } from '../../Api/Redux/authReducer';
+import { selectCurrentUserName } from '../../Api/Redux/authReducer';
 import { logOut } from '../../Api/Redux/authReducer';
 import Axios from '../../Api/axios';
 import ScNavbar from './ScNavbar';
@@ -10,12 +10,13 @@ const Navbar = () => {
     const dispatch = useDispatch()
     const navigation = useNavigate();
     const location = useLocation();
-    const userName = useSelector(selectCurrentUser)
+    const userName = useSelector(selectCurrentUserName)
 
     const signOut = async () => {
         const from = location.state?.from?.pathname || "/";
         await Axios.get('/logout',{ withCredentials: true }).then(() =>{
             dispatch(logOut())
+            sessionStorage.clear();
             navigation(from, { replace: true })
         });
     }

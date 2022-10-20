@@ -1,7 +1,7 @@
 import {BrowserRouter as Router, useNavigate, useLocation } from 'react-router-dom';
-import  React,{useEffect, useState } from "react";
+import  React,{useEffect, useState} from "react";
 import { useDispatch } from 'react-redux';
-import { setCredentials, setUserName } from '../../Api/Redux/authReducer';
+import { setUserRole, setUserName } from '../../Api/Redux/authReducer';
 import { emailValidator, passwordValidator } from '../../Constants';
 import ScUserLogin from "./ScUserLogin";
 import Axios from '../../Api/axios';
@@ -77,13 +77,15 @@ const UserLogin = () => {
 
     const userAuthorization = async () => {
         const from = location.state?.from?.pathname || "/ImageSet";
-        try {
+        try {console.log("userAuthorization ")
             await Axios.post('/login',{
                 user_name:  userid_login,
                 password:  password_login
-                }, { withCredentials: true }).then((response) => {
-                    dispatch(setUserName(userid_login))
-                    dispatch(setCredentials( response.data.accessToken ))
+                }, { withCredentials: true }).then(async (response) => {
+                    dispatch(setUserName(response.data.user_name))
+                    dispatch(setUserRole(response.data.role))
+                    sessionStorage.setItem("user_name", response.data.user_name)
+                    sessionStorage.setItem("role", response.data.role)
                     response.status === 200 ? navigation(from, { replace: true }): setwrongLogin(response.data.message);  
                 });
         } catch (error) {

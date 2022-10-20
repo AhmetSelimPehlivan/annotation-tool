@@ -12,14 +12,15 @@ export const handleDragStart = ({e, setIsDraging, removeLine}) => {
 }
 
 export const handleDragEnd = ({e, setLineCount, setNewLine, lineCount, newLine})=>{
-  if(newLine.node === "internal"){
-    setLineCount(lineCount+2)
-    setNewLine({node: false})
-  }
-  else if(newLine.node.indexOf("external") > -1){
-    setLineCount(lineCount+1)
-    setNewLine({node: false})
-  }
+  if(newLine.node !== false)
+    if(newLine.node === "internal"){
+      setLineCount(lineCount+2)
+      setNewLine({node: false})
+    }
+    else if(newLine.node.indexOf("external") > -1){
+      setLineCount(lineCount+1)
+      setNewLine({node: false})
+    }
 }
 
 export const handleMouseMove = ({e, setcurrentPoint, firstClick}) => {

@@ -1,20 +1,24 @@
 const mongoose = require('mongoose');
 
 const TaskSchema = new mongoose.Schema({
+    _id: {
+        type: Number, 
+        required: true
+    },
     pose_name:{
         type: String,
         required: true
     },
     image_id:{
-        type: Array,
+        type: String,
         required: true
     },
-    pose_index:{
+    frames:{
         type: Array,
         required: true
     },
     frame_interval:{
-        type: Array,
+        type: Map,
         required: true
     },
     dedicated_user: {
@@ -22,7 +26,7 @@ const TaskSchema = new mongoose.Schema({
         required: true
     },
     finished_frame_count: {
-        type: Array,
+        type: Number,
         required: true
     }
 });

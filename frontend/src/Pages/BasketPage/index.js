@@ -4,21 +4,18 @@ import Card from '../../Components/Card';
 import {string, dict, array} from 'prop-types';
 import { useState, useEffect } from 'react';
 import Axios from '../../Api/axios'
-import { selectCurrentUser } from '../../Api/Redux/authReducer';
+import { selectCurrentUserName } from '../../Api/Redux/authReducer';
 import { useSelector } from 'react-redux'
 
 const BasketPage = () => {
 
 const [tasks,setTasks] = useState([])
-const userName = useSelector(selectCurrentUser)
+const userName = useSelector(selectCurrentUserName)
 useEffect(() => {
-    //    ImportJson()
     console.log("UseEffect Requestsss ",userName)
     async function fetchData(){
         try {
-            await Axios.post('/getTask',{
-                dedicated_user: userName,
-            }).then((response) =>{
+            await Axios.get('/getsession',{withCredentials: true}).then((response) =>{
                 setTasks(response.data.tasks)
             });
         } catch (error) {
@@ -54,7 +51,7 @@ const onPick = async (image_Name,pose_name,pose_index,frame_start,frame_req)=>{
             <div className='main'>{console.log(tasks)}
                 {
                     tasks.map((task,index) =>
-                        <Card pose_name={task.pose_name} image_id={task.image_id} frame_count={task.finished_frame_count} available_frame_count={task.frame_interval} isBasket={true} onPick={onPick}/>
+                        <Card pose_name={task.pose_name} image_id={[task.image_id]} frame_count={task.finished_frame_count} available_frame_count={task.frame_interval} isBasket={true} onPick={onPick}/>
                     )
                 }
             </div>

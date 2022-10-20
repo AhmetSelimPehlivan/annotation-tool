@@ -1,12 +1,13 @@
 const express = require("express");
-//const session = require('express-session')
-var AWS = require("aws-sdk");
+const session = require('express-session')
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const http = require("http");
 const mongoose = require('mongoose');
-//const MongoStore = require('connect-mongo');
 const {Server} = require('socket.io')
+const RedisStore = require("connect-redis")(session);
+const Redis = require('ioredis');
+var AWS = require("aws-sdk");
 const bodyParser = require('body-parser');
 const authRoute = require('./routes/authRoutes')
 const imageRoute = require('./routes/imageRoutes')
@@ -16,7 +17,8 @@ const completedTaskRoute = require('./routes/completedTaskRoutes')
 const s3Route = require('./routes/s3Routes')
 const app = express();
 const server = http.createServer(app);
-//const sixHour = 1000 * 60 * 60 * 6;
+
+const sixHour = 1000 * 60 * 60 * 6;
 require('dotenv/config');
 const io = new Server(server, {
   cors: {
@@ -24,20 +26,28 @@ const io = new Server(server, {
     methods: ["GET", "POST"]
   }
 })
+const redis = new Redis();
+app.use(session({
+  name: process.env.COOKIE_NAME,
+  store: new RedisStore({ 
+    client: redis,
+    disableTouch: true
+  }),
+  cookie: { 
+    expires: sixHour, 
+    httpOnly: true,
+    secure: false
+  },
+  secret: process.env.JWTPRIVATEKEY,
+  resave: false,
+  saveUninitialized: false,
+}))
 
 app.set('trust proxy', 1) // trust first proxy
 app.use(cors({credentials: true, origin: 'http://localhost:3000'}));
 app.use(express.json());
 app.use(cookieParser());
 app.use(bodyParser.json());
-/*
-app.use(session({
-  secret: process.env.JWTPRIVATEKEY,
-  resave: false,
-  saveUninitialized: true,
-  cookie: { maxAge: sixHour },
-  //store: MongoStore.create({mongoUrl: process.env.DB_CONNECTION})
-}))*/
 
 // Routes
 app.use(authRoute);

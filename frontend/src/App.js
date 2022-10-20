@@ -3,7 +3,7 @@ import { Provider } from 'react-redux'
 import React, { Suspense } from 'react';
 import UserLogin from './Pages/UserLogin';
 import RequireAuth from "./RequireAuth";
-import { store } from './Api/Redux/store'
+import { store } from './Api/Redux/store';
 import { ROLES } from './Constants/roles';
 
 const WelcomePage = React.lazy(() => import('./Pages/WelcomePage'));
@@ -15,8 +15,8 @@ function App() {
     <Provider store={store}>
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<UserLogin/>} />
-          <Route  element={<RequireAuth allowedRoles={[...Object.values(ROLES)]} />}>
+        <Route path="/" element={<UserLogin/>} />
+          <Route element={<RequireAuth allowedRoles={[...Object.values(ROLES)]} />}>
             <Route path="/ImageSet" element={<WelcomePage />}/>
             <Route path="/Basket" element={<BasketPage />}/>
             <Route path="/Edit" element={<EditPage />} />

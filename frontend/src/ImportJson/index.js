@@ -24,33 +24,25 @@ export const GetFrameLengths = (Frames) =>{
   return frames
 }
 
-export const GetFrame = async(poseName,image_id,frameIndex,setFrame) =>{
-  try {
-    await Axios.post('/getKeypoints',{
-      pose_name: poseName,
-      image_id: image_id,
-      frameIndex: frameIndex
-    }).then((response) =>{
-        const keypoints = response.data.Keypoints
-        let lines = []
-        let point = []
-        let counter = 0
-        if(keypoints.length !== 0){ 
-          ATTRIBUTE_CONNECTIONS.map((item,index) => {
-              item.map((att,index) =>{
-                const frame = keypoints.find(({bodyPart}) => bodyPart === att)
-                if(index > 0)
-                  lines.push({previous_id: counter-1, next_id: counter, x_start:point[point.length-1].xAxis, y_start:point[point.length-1].yAxis, x_end:frame.xAxis/3, y_end:frame.yAxis/3+10})
-                point.push({id: counter, x: frame.xAxis/3, y: frame.yAxis/3+10 })
-                counter++
-              })
+export const GetPointAndLines = (keypoints) =>{
+  let lines = []
+  let point = []
+  let counter = 0
+  if(keypoints.length !== 0){ 
+    keypoints.map((keypoint) => {
+      ATTRIBUTE_CONNECTIONS.map((item,index) => {
+          item.map((att,index) =>{
+            const frame = keypoint.find(({bodyPart}) => bodyPart === att)
+            if(index > 0)
+              lines.push({previous_id: counter-1, next_id: counter, x_start:point[point.length-1].x, y_start:point[point.length-1].y, x_end:frame.xAxis/2, y_end:frame.yAxis/2+10})
+            point.push({id: counter, x: frame.xAxis/2, y: frame.yAxis/2+10 })
+            counter++
           })
-        }
-        setFrame({point, lines})
+      })
     });
-  } catch (error) {
-      console.log("error ",error)
+
   }
+  return {point, lines}
 }
 
 export const Upload_file = (pose_name,image_id,frameIndex,setFrame) =>{
