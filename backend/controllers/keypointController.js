@@ -20,9 +20,7 @@ module.exports.getKeypoint_post = async (req, res) => {
                 console.log("Keypoint::fetchOneByKey::error - " + JSON.stringify(err, null, 2));
             }
             else {
-                //console.log("Keypoint::fetchOneByKey::success - " + JSON.stringify(data, null, 2));
                 res.status(201).send({Keypoints: data.Item.points.slice(req.body.frame_start, req.body.frame_end), message: "Keypoints are gotten successfully" });
-                
             }
         })
     } catch (error) {

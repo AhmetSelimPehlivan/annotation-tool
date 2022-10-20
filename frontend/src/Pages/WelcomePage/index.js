@@ -42,20 +42,23 @@ const WelcomePage = () => {
                 frame_start: frame_start,
                 frame_end: (frame_start+frame_req)
               }).then( async(response) =>{
+                console.log("getKeypoints resp")
                 await Axios.post('/addTask',{
                     pose_name:  pose_name,
                     image_id:  image_id,
-                    frames: GetPointAndLines(response.data.Keypoints),
+                    frames: response.data.Keypoints,
                     frame_interval: {start:frame_start, end:(frame_start+frame_req)},
                     dedicated_user:  userName,
                     finished_frame_count:  0,
-                }).then( async () =>{
+                },{withCredentials: true}).then( async () =>{
+                    console.log("addTask resp")
                    await Axios.post('/update_frame',{
                         pose_name:  pose_name,
                         image_id:  image_id,
                         pose_index: pose_index,
                         minus_frame_count: frame_req
                     }).then(()=>{
+                        console.log("update_frame resp")
                     cardProps.available_frame_count[pose_index] -=frame_req
                     socket.emit('available_frame_count',cardProps.available_frame_count)
                     setCardProps(prevProps => ({...prevProps, available_frame_count: cardProps.available_frame_count})) 

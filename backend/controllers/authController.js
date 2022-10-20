@@ -1,12 +1,5 @@
 const User = require('../models/User');
 const Task = require('../models/Task');
-const jwt = require("jsonwebtoken");
-
-const createToken = (user_name, user_role, user_password) => {
-    return jwt.sign({ name:user_name, role:user_role, password:user_password }, 
-        process.env.JWTPRIVATEKEY, {
-		expiresIn: "4h",});
-};
 
 // controller actions
 module.exports.signup_get = (req, res) => {
@@ -38,9 +31,6 @@ module.exports.signup_post = async (req, res) => {
             return res.status(409).send({ message: "!User with given User Name already Exist" });
 
         const user = await User.create({ ...req.body });
-        //const token = createToken(user.user_name, user.role, user.password);
-        //res.cookie('jwt', token, { httpOnly: true });
-        //res.cookie('isLogin', true, { httpOnly: true });
         res.status(201).send({ message: "User created successfully" });
     } catch (error) {
         res.status(500).send({ message: "!Internal Server Error\n",error });
@@ -55,7 +45,6 @@ module.exports.login_post = async (req, res) => {
         req.session.user_name = user.user_name;
         req.session.role = user.role;
         req.session.tasks = userTasks;
-        //console.log(req.sessionID,"ooo ",req.session)
         res.status(200).send({ user_name: user.user_name, role: user.role, message: "logged in successfully" });
     } catch (error) {
         if(error === "!Invalid Email or Password")

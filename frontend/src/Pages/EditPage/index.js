@@ -33,23 +33,19 @@ const [tasks, setTasks] = useState([])
       fetchData()
   },[]);
   
-  const GetFrame = async(poseName,image_id,frameIndex) =>{
+  const GetFrame = async(task_id,frameIndex) =>{
     try {
-      console.log(tasks.find(element => element.pose_name === poseName).image_id.findIndex(id => id === image_id))
-      /*
-      await Axios.post('/getKeypoints',{
-        pose_name: poseName,
-        image_id: image_id,
-        frameIndex: frameIndex
-      }).then((response) =>{
-          setFrame(GetPointAndLines(response.data.Keypoints))
-          setlastEdit({pose_name: poseName, image_id: image_id})
-      });*/
+      //
+      await Axios.get('/getsession',{withCredentials: true}).then((response) =>{
+        setFrame(GetPointAndLines(response.data.tasks.find(({_id}) => _id === task_id)))
+        //  setlastEdit({pose_name: poseName, image_id: image_id})
+      });
     } catch (error) {
         console.log("error ",error)
     }
   }
   
+  //// Tekrardan Bak
   const onSubmit = async(lines) =>{
     console.log("lines ",lines)
     await Axios.post('/getCompletedTask',{

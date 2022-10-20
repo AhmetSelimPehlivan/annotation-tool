@@ -1,4 +1,3 @@
-import Axios from '../Api/axios'
 import { useSelector } from 'react-redux'
 import { selectLines } from '../Api/Redux/editReducer';
 import { ATTRIBUTE_CONNECTIONS } from '../Constants/attributeTypes'
@@ -25,11 +24,12 @@ export const GetFrameLengths = (Frames) =>{
 }
 
 export const GetPointAndLines = (keypoints) =>{
-  let lines = []
-  let point = []
   let counter = 0
+  let point = []
+  let lines_array = []
   if(keypoints.length !== 0){ 
     keypoints.map((keypoint) => {
+      let lines = []
       ATTRIBUTE_CONNECTIONS.map((item,index) => {
           item.map((att,index) =>{
             const frame = keypoint.find(({bodyPart}) => bodyPart === att)
@@ -39,10 +39,10 @@ export const GetPointAndLines = (keypoints) =>{
             counter++
           })
       })
+      lines_array.push(lines)
     });
-
   }
-  return {point, lines}
+  return {point, lines_array}
 }
 
 export const Upload_file = (pose_name,image_id,frameIndex,setFrame) =>{

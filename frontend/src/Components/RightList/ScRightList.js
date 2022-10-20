@@ -23,18 +23,18 @@ const ScRightList = Styled.div`
         .ImageList{
             width: 180px;
             margin: 10px;
-            .ImageName{
-                width: 100%;
-                padding: 5px;
-                border: 1px solid black;
+            .TaskNumber{
+                margin: 5px 15px;
+                font-size: 14px;
             }
             .Image, .Pose{
                 margin: 5px;
                 font-size: 16px;
             }
             .Pose{
-                margin: 5px 15px;
-                font-size: 14px;
+                width: 100%;
+                padding: 5px;
+                border: 1px solid black;
             }
             .Frame{
                 display: flex;

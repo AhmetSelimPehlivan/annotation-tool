@@ -19,8 +19,11 @@ const UserLogin = () => {
     const [userid_login, userid_loginset] = useState();
     const [password_login, password_loginset] = useState();    
     const location = useLocation();
-
+    const from = location.state?.from?.pathname || "/ImageSet";
+    
     useEffect(() => {
+        if(sessionStorage.getItem("role") == "User")
+            navigation(from, { replace: true })
         const loginBtn = document.getElementById('login');
         const signupBtn = document.getElementById('signup');
 
@@ -76,7 +79,6 @@ const UserLogin = () => {
     }
 
     const userAuthorization = async () => {
-        const from = location.state?.from?.pathname || "/ImageSet";
         try {console.log("userAuthorization ")
             await Axios.post('/login',{
                 user_name:  userid_login,

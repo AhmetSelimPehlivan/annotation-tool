@@ -8,7 +8,6 @@ import { handleDrag, handleDragStart, handleDragEnd, handleMouseMove, handleMous
 
 const Canvas = ({window_size, selectedTool, selectedType, importJson, onSubmit}) => {
 
-const dispatch = useDispatch()
 const [isDraging, setIsDraging] = useState(false);
 const [firstClick, setfirstClick] = useState(false);
 const [enterPress, setEnterPress] = useState(false);

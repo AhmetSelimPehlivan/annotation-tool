@@ -1,32 +1,26 @@
 import ScRightList from './ScRightList';
 import {prototype, array} from 'prop-types';
-import { useMemo } from 'react';
+import { useCallback } from 'react';
 
 const RightList = ({tasks,onSelect}) => {
     
-    const list_item_Renderer = (item) => {
+    const list_item_Renderer = useCallback((item) => {
         if (item === undefined) return
         let list_item = []
         for (let i = 0; i < item.end-item.start; i++)
             list_item.push(item.start+i)
         return list_item
-    }
-
+    })
     return (
         <ScRightList>
             <ul className="right-List">
                <p className='list-header'>Images</p>
                 {tasks.map((task) =>
                     <li className='ImageList'>
-                        <p className='ImageName'>{task.pose_name}</p>
+                        <p className='Pose'>{task.pose_name}</p>
+                        <p className='TaskNumber'>Task {task._id}</p>
                         <ul>
-                        {task.image_id.map((image_name,index) => 
-                            <li className='Pose'>{image_name}
-                                <ul>
-                                    {list_item_Renderer(task.frame_interval[index]).map((id) => <li className='Frame' onClick={() => onSelect(task.pose_name,image_name,id)}>Frame {id}</li>)}
-                                </ul>
-                            </li>
-                        )}
+                            {list_item_Renderer(task.frame_interval).map((id) => <li className='Frame' onClick={() => onSelect(task._id,id)}>Frame {id}</li>)}
                         </ul>
                     </li>
                 )}
