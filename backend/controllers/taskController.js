@@ -11,7 +11,7 @@ module.exports.addTask_post = async (req, res) => {
                 _id: user_tasks.length+1,
                 pose_name: req.body.pose_name,
                 image_id: req.body.image_id,
-                frames: req.body.frames.lines,
+                frames: req.body.frame,
                 frame_interval: req.body.frame_interval,
                 dedicated_user: req.body.dedicated_user,
                 finished_frame_count: req.body.finished_frame_count};

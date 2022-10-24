@@ -9,21 +9,32 @@ module.exports.addCompletedTask_post = async (req, res) => {
     try {
         var params = {
             TableName: "CompletedTask",
-            Item:  {
-                "pose_name": req.body.pose_name, 
-                "image_id": req.body.image_id, 
-                "poses": req.body.poses,
-                "frame_count": req.body.frame_count,
-            }
+            Key: { "pose_name": req.body.pose_name, "image_id": req.body.image_id },
+            UpdateExpression: "set poses = :newPoses, frame_count = :new_frame_count",
+            ExpressionAttributeValues: {
+                ":newPoses": req.body.poses,
+                ":new_frame_count": +1
+            },
+            ReturnValues: "UPDATED_NEW"
         };
-        docClient.put(params, function (err, data) {
+        docClient.update(params, function (err, data) {
             if (err) {
-                console.log("tasks::save::error - " + JSON.stringify(err, null, 2));                      
+                console.log("users::update::error - " + JSON.stringify(err, null, 2));
             } else {
-                console.log("tasks::save::success" );                      
+                console.log("users::update::success");
             }
         });
-        res.status(201).send({ message: "Task is added successfully" });
+        const tasks = req.session.tasks;
+        const task = tasks.find(({_id}) => _id === req.body.task_id)
+        if(task.frames.length > 1){
+            task.frames.shift()
+            task.finished_frame_count += 1;
+            res.status(201).send({tasks: tasks, isTaskFinished: false, message: "Task is added successfully" });
+        }
+        else{
+            tasks.splice(tasks.indexOf(task), 1)
+            res.status(201).send({tasks: tasks, isTaskFinished: true, message: "Task is finished successfully" });
+        }
     } catch (error) {
         res.status(500).send({ message: "!Internal Server Error\n",error });
     }
@@ -43,7 +54,6 @@ module.exports.getCompletedTask_post = async (req, res) => {
                 console.log("users::fetchOneByKey::error - " + JSON.stringify(err, null, 2));
             }
             else {
-                console.log("data ",data)
                 res.status(201).send({data: data, message: "Tasks are gotten successfully" });
                 //console.log("users::fetchOneByKey::success - " + JSON.stringify(data, null, 2));
             }
@@ -54,7 +64,6 @@ module.exports.getCompletedTask_post = async (req, res) => {
 }
 module.exports.updateCompletedTask_post = async (req, res) => {
     try {
-        console.log("update")
         var params = {
             TableName: "CompletedTask",
             Key: { "pose_name": req.body.pose_name, "image_id": req.body.image_id },
@@ -71,10 +80,14 @@ module.exports.updateCompletedTask_post = async (req, res) => {
             if (err) {
                 console.log("users::update::error - " + JSON.stringify(err, null, 2));
             } else {
-                console.log("users::update::success "+JSON.stringify(data) );
+                console.log("users::update::success");
             }
         });
-        res.status(201).send({ message: "Task is finished successfully" });
+        task = req.session.tasks.find(({_id}) => _id === req.body.task_id)
+        task.frames.shift()
+        task.finished_frame_count += 1;
+        console.log(task.frames)
+        res.status(201).send({new_frame: task.frames, message: "Task is finished successfully" });
     } catch (error) {
         res.status(500).send({ message: "!Internal Server Error\n",error });
     }

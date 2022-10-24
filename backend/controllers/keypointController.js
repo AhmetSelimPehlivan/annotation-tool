@@ -1,6 +1,6 @@
 var AWS = require("aws-sdk");
 AWS.config.update({
-    "region": "eu-central-1",
+    "region": "eu-west-3",
     "accessKeyId": process.env.AWS_ACCESS_KEY_ID, "secretAccessKey":  process.env.AWS_SECRET_ACCESS_KEY
   });
 let docClient = new AWS.DynamoDB.DocumentClient();
@@ -9,7 +9,7 @@ let docClient = new AWS.DynamoDB.DocumentClient();
 module.exports.getKeypoint_post = async (req, res) => {
     try {
         var params = {
-            TableName: "Keypoint",
+            TableName: "Keypoints",
             Key: {
                 "pose_name":  req.body.pose_name,
                 "image_id": req.body.image_id
@@ -17,9 +17,10 @@ module.exports.getKeypoint_post = async (req, res) => {
         };
         docClient.get(params, function (err, data) {
             if (err) {
-                console.log("Keypoint::fetchOneByKey::error - " + JSON.stringify(err, null, 2));
+                console.log("Keypoints::fetchOneByKey::error - " + JSON.stringify(err, null, 2));
             }
             else {
+                //console.log("Keypoint::fetchOneByKey::success - " + JSON.stringify(data, null, 2));
                 res.status(201).send({Keypoints: data.Item.points.slice(req.body.frame_start, req.body.frame_end), message: "Keypoints are gotten successfully" });
             }
         })
@@ -31,7 +32,7 @@ module.exports.getKeypoint_post = async (req, res) => {
 module.exports.getUserTasks_post = async (req, res) => {
     try {
         var params = {
-            TableName: "Keypoint",
+            TableName: "Keypoints",
             Key: {
                 "pose_name":  req.body.pose_name,
                 "image_id": req.body.image_id
@@ -39,12 +40,10 @@ module.exports.getUserTasks_post = async (req, res) => {
         };
         docClient.get(params, function (err, data) {
             if (err) {
-                console.log("Keypoint::fetchOneByKey::error - " + JSON.stringify(err, null, 2));
+                console.log("Keypoints::fetchOneByKey::error - " + JSON.stringify(err, null, 2));
             }
             else {
-                //console.log("Keypoint::fetchOneByKey::success - " + JSON.stringify(data, null, 2));
                 res.status(201).send({Keypoints: data.Item.points[req.body.frameIndex], message: "Keypoints are gotten successfully" });
-                
             }
         })
     } catch (error) {

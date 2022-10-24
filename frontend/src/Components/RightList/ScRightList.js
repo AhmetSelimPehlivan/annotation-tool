@@ -5,6 +5,11 @@ const ScRightList = Styled.div`
         width: 200px;
         height: 100vh;
         overflow: scroll;
+        
+        counter-reset: li; 
+        list-style: none; 
+        padding: 0;
+        text-shadow: 0 1px 0 rgba(255,255,255,.5);
         .list-header{
             margin: 0px;
             padding: 20px;
@@ -21,17 +26,53 @@ const ScRightList = Styled.div`
         }
 
         .ImageList{
-            width: 180px;
+            width: 65%;
             margin: 10px;
-            .TaskNumber{
-                margin: 5px 15px;
-                font-size: 14px;
-            }
-            .Image, .Pose{
+            position: relative;
+            display: block;
+            padding: .4em .4em .4em .8em;
+            margin: .5em 0 .5em 2.5em;
+            background: #D3D4DA;
+            color: #444;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all .3s ease-out;
+              
+            &:hover {background: #DCDDE1;}
+            &:before {
+                content: counter(li);
+                counter-increment: li;
+                position: absolute;
+                left: -2.5em;
+                top: 50%;
+                margin-top: -1em;
+                background: #f9dd94;
+                height: 2em;
+                width: 2em;
+                line-height: 2em;
+                text-align: center;
+                font-weight: bold;
+              }
+              
+            &:after {
+                position: absolute;
+                content: "";
+                border: .5em solid transparent;
+                left: -1em;
+                top: 50%;
+                margin-top: -.5em;
+                transition: all .3s ease-out;
+              }
+              
+            &:hover:after {
+                left: -.5em;
+                border-left-color: #f9dd94;
+              }
+            .Image, .TaskNumber{
                 margin: 5px;
                 font-size: 16px;
             }
-            .Pose{
+            .TaskNumber{
                 width: 100%;
                 padding: 5px;
                 border: 1px solid black;
@@ -42,9 +83,8 @@ const ScRightList = Styled.div`
                 width: 80px;
                 margin: 5px 0px;
                 font-size: 12px;
-                cursor: pointer;
             }
-        }
+        }     
     }
 `;
 export default ScRightList;

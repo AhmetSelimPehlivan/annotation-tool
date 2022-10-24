@@ -2,7 +2,6 @@ import ScCanvas from './ScCanvas';
 import { Stage, Layer, Line , Circle } from "react-konva";
 import { useState, useEffect } from "react";
 import { string, dict, bool } from 'prop-types';
-import { useDispatch } from 'react-redux';
 import { ATTRIBUTE_TYPES } from '../../Constants';
 import { handleDrag, handleDragStart, handleDragEnd, handleMouseMove, handleMouseUp} from '../../Constants/utils';
 
@@ -18,7 +17,7 @@ const [newLine, setNewLine] = useState({draw: false});
 const [lines, setLines] = useState([]);
 const [point, setPoint] = useState([]);
 const [pointCounter, setPointCounter] = useState(0);
-
+console.log("CANVAS")
 useEffect(() => {
   if (lineCount < lines.length){
     if(newLine.node === "internal")
@@ -26,15 +25,7 @@ useEffect(() => {
     lines.pop()
   }
     
-  if(firstClick){
-    if(enterPress){
-      setfirstClick(false)
-      setEnterPress(false)
-    }
-    else
-      setLines([...lines, {previous_id: pointCounter-1, next_id: pointCounter, x_start:point[point.length-1].x, y_start:point[point.length-1].y, x_end:currentPoint.x, y_end:currentPoint.y}]);
-  }
-  else if(isDraging){
+  if(isDraging){
     if(newLine.node === "internal")
       setLines([...lines,
         {previous_id: newLine.previous_id-1, next_id: newLine.previous_id, x_start:newLine.xP_start, y_start:newLine.yP_start, x_end:currentPoint.x, y_end:currentPoint.y},
@@ -44,6 +35,14 @@ useEffect(() => {
       setLines([...lines, {previous_id: newLine.previous_id, next_id: newLine.next_id, x_start:currentPoint.x, y_start:currentPoint.y, x_end:newLine.x_end, y_end:newLine.y_end}]);
     else if( newLine.node === "external_end")
       setLines([...lines, {previous_id: newLine.previous_id-1, next_id: newLine.previous_id, x_start:newLine.x_start, y_start:newLine.y_start, x_end:currentPoint.x, y_end:currentPoint.y}]);
+  }
+  else if(firstClick){
+    if(enterPress){
+      setfirstClick(false)
+      setEnterPress(false)
+    }
+    else
+      setLines([...lines, {previous_id: pointCounter-1, next_id: pointCounter, x_start:point[point.length-1].x, y_start:point[point.length-1].y, x_end:currentPoint.x, y_end:currentPoint.y}]);
   }
 },[newLine,currentPoint,enterPress]);
 
@@ -55,7 +54,6 @@ useEffect(() => {
 
 useEffect(() => {
   if(Object.keys(importJson).length !== 0){
-    console.log(importJson)
     setPoint(importJson.point)
     setLines(importJson.lines)
     setLineCount(importJson.lines.length)

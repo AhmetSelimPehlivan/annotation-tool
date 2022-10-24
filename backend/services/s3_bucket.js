@@ -1,11 +1,12 @@
 const Image = require('../models/Image');
 const zlib = require("zlib");
+var fs = require('fs');
 var AWS = require("aws-sdk");
 const { S3Client, GetObjectCommand, ListObjectsCommand } = require("@aws-sdk/client-s3");
 //const { DynamoDBClient } = require("@aws-sdk/client-dynamodb");
 //const { DynamoDBDocument } = require("@aws-sdk/lib-dynamodb");
 AWS.config.update({
-  "region": "eu-central-1",
+  "region": "eu-west-3",
   "accessKeyId": process.env.AWS_ACCESS_KEY_ID, "secretAccessKey":  process.env.AWS_SECRET_ACCESS_KEY
 });
 let dynamoClient = new AWS.DynamoDB.DocumentClient();
@@ -30,7 +31,7 @@ const s3 = bucket_instance();
 const bucketData = await s3.send(new ListObjectsCommand(params));
 const newFiles = await getNewFiles(bucketData.Contents)
 
-  for (let j = 0; j < 20/*newFiles.length*/; j++)
+  for (let j = 0; j < newFiles.length; j++)
     ImportJson(newFiles[j].pose_name, newFiles[j].file_id ,JSON.parse((await unzipFromS3(s3,newFiles[j].pose_name + "/" + newFiles[j].file_id, bucketName)).toString('utf-8')))
 }
 
@@ -74,11 +75,12 @@ const ImportJson = (name,image_id,data) => {
   for (let index = 0; index < data.records.length; index++) {
     let points = []
     for (let i = 0; i < data.records[index].keypoints.length; i++)
-      points.push({xAxis: data.records[index].keypoints[i].xAxis, yAxis: data.records[index].keypoints[i].yAxis, bodyPart: data.records[index].keypoints[i].bodyPart})
+      if(data.records[index].keypoints[i].xAxis === undefined)
+        points.push({xAxis: data.records[index].keypoints[i].x, yAxis: data.records[index].keypoints[i].y, bodyPart: data.records[index].keypoints[i].bodyPart})
+       else
+        points.push({xAxis: data.records[index].keypoints[i].xAxis, yAxis: data.records[index].keypoints[i].yAxis, bodyPart: data.records[index].keypoints[i].bodyPart})
     keypoints.push(points)
   }
-  
-  addNewPosesToDb(name, image_id, data.records.length)
   addNewKeypointsToDb(name,image_id,keypoints,keypoints.length)
 }
 
@@ -104,7 +106,7 @@ const addNewPosesToDb = async (pose_name,image_id,frame_count) =>{
 const addNewKeypointsToDb = async (name,image_id,points,frame_count) =>{
   try{
      dynamoClient.put({
-        TableName: 'Keypoint',
+        TableName: 'Keypoints',
         Item:{
             pose_name: name,
             image_id: image_id,
@@ -113,8 +115,13 @@ const addNewKeypointsToDb = async (name,image_id,points,frame_count) =>{
         }
       }, function (err, data) {
         if (err) {
-            console.log("addNewKeypointsToDb::save::error - " + JSON.stringify(err, null, 2));                      
+            console.log("addNewKeypointsToDb::save::error - " + JSON.stringify(err, null, 2));
+            const length = points.length
+            const obj = {image_id,length}
+            fs.appendFile("log.txt", JSON.stringify(obj), function(err) {
+          });            
         } else {
+            addNewPosesToDb(name, image_id, frame_count)
             console.log("addNewKeypointsToDb::save::success" );                      
         }
     });
