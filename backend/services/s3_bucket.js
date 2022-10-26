@@ -3,8 +3,6 @@ const zlib = require("zlib");
 var fs = require('fs');
 var AWS = require("aws-sdk");
 const { S3Client, GetObjectCommand, ListObjectsCommand } = require("@aws-sdk/client-s3");
-//const { DynamoDBClient } = require("@aws-sdk/client-dynamodb");
-//const { DynamoDBDocument } = require("@aws-sdk/lib-dynamodb");
 AWS.config.update({
   "region": "eu-west-3",
   "accessKeyId": process.env.AWS_ACCESS_KEY_ID, "secretAccessKey":  process.env.AWS_SECRET_ACCESS_KEY
@@ -81,7 +79,16 @@ const ImportJson = (name,image_id,data) => {
         points.push({xAxis: data.records[index].keypoints[i].xAxis, yAxis: data.records[index].keypoints[i].yAxis, bodyPart: data.records[index].keypoints[i].bodyPart})
     keypoints.push(points)
   }
-  addNewKeypointsToDb(name,image_id,keypoints,keypoints.length)
+  if(keypoints.length>400){
+    for (let i = 0; i < Math.ceil(keypoints.length/400); i++)
+      if( Math.floor(keypoints.length/400) > i)
+        addNewKeypointsToDb(name,(image_id+"-"+(i+1)),keypoints.splice(i*400, (i+1)*400),400)
+      else
+        addNewKeypointsToDb(name,(image_id+"-"+(i+1)),keypoints.splice(i*400, keypoints.length-(i*400)),keypoints.length-(i*400))
+  }
+  else{
+    addNewKeypointsToDb(name,image_id,keypoints,keypoints.length)
+  }
 }
 
 const uploadBucketToS3 = async (bucketName) => {
@@ -95,10 +102,11 @@ const uploadBucketToS3 = async (bucketName) => {
 }
 
 const addNewPosesToDb = async (pose_name,image_id,frame_count) =>{
+
   await Image.create({
     pose_name: pose_name,
     image_id: image_id,
-    total_frame_count: frame_count,
+    total_frame: [[0,frame_count]],
     available_frame_count: frame_count
   });
 }

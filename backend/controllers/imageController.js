@@ -19,7 +19,7 @@ module.exports.get_Image_get = async (req, res) => {
         for (let index = 0; index < images.length; index++) {
             poseNames.push(images[index].pose_name)
             image_ids.push(images[index].image_id)
-            frame_counts.push(images[index].total_frame_count)
+            frame_counts.push(images[index].available_frame_count)
         }
         uniqueArray = poseNames.filter(function(item, pos,index) {
                 //console.log("i ",poseNames.indexOf(item) === pos)
@@ -33,11 +33,22 @@ module.exports.get_Image_get = async (req, res) => {
 
 module.exports.update_frame_post = async (req, res) => {
     try {
-        const pose = await Image.find({pose_name: req.body.pose_name})
-        let frames = pose[0].available_frame_count
-        console.log("frames ",frames)
-        frames[req.body.pose_index] -= req.body.minus_frame_count
-        if(await Image.updateOne({pose_name:  req.body.pose_name}, {$set: {available_frame_count: frames}}))
+        const pose = await Image.find({pose_name: req.body.pose_name, image_id: req.body.image_id})
+        //console.log("pose ",pose)
+        let frames = pose[0].total_frame
+        let frame_request = req.body.frame_req
+        //console.log("frame ",frames)
+        //console.log("frame_request ",frame_request)
+        for (let i = 0; i < frames.length; i++) {
+            if((frames[i][1]-frames[i][0]) < req.body.frame_req){
+                frames.shift()
+                frame_request -= (frames[i][1]-frames[i][0])
+            }
+            else{
+                frames[i][0] += frame_request
+            }
+        }
+        if(await Image.updateOne({pose_name:  req.body.pose_name, image_id: req.body.image_id}, {$set: {total_frame: frames}}))
             res.status(201).send({ message: "Pose is updated successfully" });
         else
             res.status(500).send({ message: "!Pose is not updated\n"});
@@ -47,6 +58,21 @@ module.exports.update_frame_post = async (req, res) => {
     }
 }
 
+module.exports.remove_frame_post = async (req, res) => {
+    try {
+        const pose = await Image.find({pose_name: req.body.pose_name, image_id: req.body.image_id})
+        let frames = pose.total_frame
+        frames.push(req.body.frame_interval)
+        frames.sort((a, b) => a[0] - b[0]);
+        if(await Image.updateOne({pose_name:  req.body.pose_name, image_id: req.body.image_id}, {$set: {total_frame: frames}}))
+            res.status(201).send({ message: "Pose is updated successfully" });
+        else
+            res.status(500).send({ message: "!Pose is not updated\n"});
+
+    } catch (error) {
+        res.status(500).send({ message: "!Internal Server Error\n",error });
+    }
+}
 module.exports.get_Frame_get = async (req, res) => {
     try {
         console.log("GetFrame ",req.body)

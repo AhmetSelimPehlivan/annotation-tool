@@ -8,7 +8,8 @@ import Axios from '../../Api/axios'
 const WelcomePage = () => {
     const userName = sessionStorage.getItem("user_name")
     const [cardProps,setCardProps] = useState({})
-    useEffect(() => {
+    const [isSubmit,setIsSubmit] = useState(false)
+    useEffect(() => {console.log("UseEffect")
         socket.on("connect", ()=>{
             console.log(`You connected :, ${socket.id}`)
         })
@@ -30,12 +31,13 @@ const WelcomePage = () => {
 
     const onPick = async (pose_name,image_id,pose_index,frame_start,frame_req)=>{
         try {
+            setIsSubmit(true)
             cardProps.available_frame_count[pose_index] -=frame_req
             socket.emit('available_frame_count',cardProps.available_frame_count)
             setCardProps(prevProps => ({...prevProps, available_frame_count: cardProps.available_frame_count}))
             await Axios.post('/getKeypoints',{
                 pose_name: pose_name,
-                image_id: image_id,                
+                image_id: image_id,
                 frame_start: frame_start,
                 frame_end: (frame_start+frame_req)
               }).then( async(response) => {
@@ -47,25 +49,29 @@ const WelcomePage = () => {
                     dedicated_user:  userName,
                     finished_frame_count:  0,
                 },{withCredentials: true}).then( async () =>{
-                    console.log("addTask resp")
                     await Axios.post('/update_frame',{
                         pose_name:  pose_name,
                         image_id:  image_id,
-                        pose_index: pose_index,
-                        minus_frame_count: frame_req
+                        frame_req: frame_req
                     })
                 })
+                setIsSubmit(false)
             });
         } catch (error) {
+            setIsSubmit(false)
             console.log("error ",error)
         }
     }
     return (
-        <ScWelcomePage>
+        <ScWelcomePage onSubmit={isSubmit}>
+            {isSubmit?
+            <div className='loadPage'>
+                <span class="loader"><span class="loader-inner"></span></span>
+            </div>:""}
             <Navbar/>
-            <div className='main'>
-                <Card pose_name={cardProps.pose_name} image_id={cardProps.image_id} frame_count={cardProps.frame_count} available_frame_count={cardProps.available_frame_count} isBasket={false} onPick={onPick}/>
-            </div>
+                <div className='main'>
+                    <Card pose_name={cardProps.pose_name} image_id={cardProps.image_id} frame_count={cardProps.frame_count} available_frame_count={cardProps.available_frame_count} isBasket={false} onPick={onPick}/>
+                </div>
         </ScWelcomePage>
     );
 }

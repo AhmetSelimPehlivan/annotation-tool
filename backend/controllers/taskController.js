@@ -37,7 +37,7 @@ module.exports.getTask_post = async (req, res) => {
 }
 module.exports.removeTask_post = async (req, res) => {
     try {
-        await Task.findOneAndRemove({ frame_interval: req.body.frame_interval, dedicated_user: req.body.dedicated_user, pose_name: req.body.pose_name, image_id: req.body.image_id })
+        await Task.findOneAndRemove({ _id: req.body.task_id, dedicated_user: req.body.dedicated_user })
         res.status(201).send({ message: "Task is finished successfully" });
     } catch (error) {
         res.status(500).send({ message: "!Internal Server Error\n",error });

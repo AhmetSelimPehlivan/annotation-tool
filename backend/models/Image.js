@@ -9,8 +9,8 @@ const ImageSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    total_frame_count:{
-        type: Number,
+    total_frame:{
+        type: Array,
         required: true
     },
     available_frame_count:{
