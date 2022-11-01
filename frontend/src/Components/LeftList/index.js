@@ -13,10 +13,6 @@ const LeftList = ({onSelect, selectedTool, onSelectedType}) => {
                         {REGION_SHAPE.map(item => <Tool name={item.Name} icon={item.Icon} onSelect={onSelect} isSelected={selectedTool==item.Name}/>)}
                     </div>
                </li>
-               <li>
-                    <p className="list-header">Attributes</p>
-                    <Attributes onSelect={onSelectedType}/>
-               </li>
             </ul>
         </ScLeftList>
     );

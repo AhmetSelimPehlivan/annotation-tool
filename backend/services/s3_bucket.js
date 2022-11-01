@@ -79,6 +79,7 @@ const ImportJson = (name,image_id,data) => {
         points.push({xAxis: data.records[index].keypoints[i].xAxis, yAxis: data.records[index].keypoints[i].yAxis, bodyPart: data.records[index].keypoints[i].bodyPart})
     keypoints.push(points)
   }
+  /*
   if(keypoints.length>400){
     for (let i = 0; i < Math.ceil(keypoints.length/400); i++)
       if( Math.floor(keypoints.length/400) > i)
@@ -88,7 +89,7 @@ const ImportJson = (name,image_id,data) => {
   }
   else{
     addNewKeypointsToDb(name,image_id,keypoints,keypoints.length)
-  }
+  }*/
 }
 
 const uploadBucketToS3 = async (bucketName) => {

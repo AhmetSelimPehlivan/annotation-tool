@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const TaskSchema = new mongoose.Schema({
-    _id: {
+    id: {
         type: Number, 
         required: true
     },
@@ -17,8 +17,8 @@ const TaskSchema = new mongoose.Schema({
         type: Array,
         required: true
     },
-    frame_interval:{
-        type: Map,
+    frame_intervals:{
+        type: Array,
         required: true
     },
     dedicated_user: {

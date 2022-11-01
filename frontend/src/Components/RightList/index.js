@@ -2,14 +2,15 @@ import ScRightList from './ScRightList';
 import {prototype, array} from 'prop-types';
 
 const RightList = ({tasks,onSelect}) => {
+    //{console.log(tasks)}
     return (
         <ScRightList>
             <ul className="right-List">
                <p className='list-header'>Images</p>
-                {tasks.map((task) =>
-                    <li className='ImageList' onClick={() => onSelect(task._id)}>
+                {tasks.map((task,index) =>
+                    <li className='ImageList' onClick={() => onSelect(task.id)}>
                         <p className='Pose'>{task.pose_name}</p>
-                        <p className='Frame'>Frame Count {task.frames.length}</p>
+                        <p className='Frame'>Frame Count {task.frames[0].length}</p>
                     </li>
                 )}
             </ul>

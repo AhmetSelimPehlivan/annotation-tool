@@ -3,23 +3,21 @@ import {socket} from "../../Constants/socket";
 import ScWelcomePage from './ScWelcomePage';
 import Navbar from '../../Components/Navbar';
 import Card from '../../Components/Card';
-import Axios from '../../Api/axios'
+import Axios from '../../Api/axios';
 
 const WelcomePage = () => {
     const userName = sessionStorage.getItem("user_name")
-    const [cardProps,setCardProps] = useState({})
+    const [cardProps,setCardProps] = useState([])
     const [isSubmit,setIsSubmit] = useState(false)
+    
     useEffect(() => {console.log("UseEffect")
         socket.on("connect", ()=>{
             console.log(`You connected :, ${socket.id}`)
         })
-        socket.on("recieve-available_frame_count", message =>{
-            setCardProps(prevProps => ({...prevProps, available_frame_count: message})) 
-        })
         async function fetchData(){
             try {
                 await Axios.get('/getImage').then((response) =>{
-                    setCardProps({pose_name: response.data.pose_name, image_id: response.data.image_id, frame_count: response.data.frame_count, available_frame_count: response.data.available_frame_count})
+                    setCardProps(response.data.image)
                  });
             } catch (error) {
                 console.log("error ",error)
@@ -29,39 +27,48 @@ const WelcomePage = () => {
         return () => {socket.off('disconnect')};
     },[]);
 
-    const onPick = async (pose_name,image_id,pose_index,frame_start,frame_req)=>{
+
+    const onPick = async (pose_name,image_id,image_index,frame_req)=>{
         try {
             setIsSubmit(true)
-            cardProps.available_frame_count[pose_index] -=frame_req
-            socket.emit('available_frame_count',cardProps.available_frame_count)
-            setCardProps(prevProps => ({...prevProps, available_frame_count: cardProps.available_frame_count}))
-            await Axios.post('/getKeypoints',{
-                pose_name: pose_name,
-                image_id: image_id,
-                frame_start: frame_start,
-                frame_end: (frame_start+frame_req)
-              }).then( async(response) => {
+            const copy_props = cardProps
+            copy_props[image_index].available_frame_count -= frame_req
+            //console.log("onPick ",copy_props)
+            socket.emit('available_frame_count',{image_index: image_index, available_frame_count: copy_props[image_index].available_frame_count})
+            setCardProps(copy_props)
+            //console.log(frame_start," - ",frame_req)
+            console.log(frame_req)
+            await Axios.post('/update_frame',{
+                pose_name:  pose_name,
+                image_id:  image_id,
+                frame_req: frame_req
+            }).then( async (response) =>{
+                console.log("response ");
                 await Axios.post('/addTask',{
-                    pose_name:  pose_name,
-                    image_id:  image_id,
-                    frame: response.data.Keypoints,
-                    frame_interval: {start:frame_start, end:(frame_start+frame_req)},
-                    dedicated_user:  userName,
-                    finished_frame_count:  0,
-                },{withCredentials: true}).then( async () =>{
-                    await Axios.post('/update_frame',{
-                        pose_name:  pose_name,
-                        image_id:  image_id,
-                        frame_req: frame_req
-                    })
+                    pose_name: pose_name,
+                    image_id: image_id,
+                    frame_intervals: response.data.frame_intervals,
+                    frame_req: frame_req,
+                    dedicated_user:  userName
+                  },{withCredentials: true}).then( async(response) => {
+                    console.log("Succesfully ",response);
                 })
-                setIsSubmit(false)
             });
+            console.log("update_frame ")
+            setIsSubmit(false)
         } catch (error) {
             setIsSubmit(false)
             console.log("error ",error)
         }
     }
+    
+    if(socket !== undefined)
+    socket.on("recieve-available_frame_count", message =>{
+        const copy_props = cardProps
+        copy_props[message.image_index].available_frame_count=message.available_frame_count
+        console.log("copy_props ",copy_props)
+        setCardProps(copy_props)
+    })
     return (
         <ScWelcomePage onSubmit={isSubmit}>
             {isSubmit?
@@ -70,7 +77,9 @@ const WelcomePage = () => {
             </div>:""}
             <Navbar/>
                 <div className='main'>
-                    <Card pose_name={cardProps.pose_name} image_id={cardProps.image_id} frame_count={cardProps.frame_count} available_frame_count={cardProps.available_frame_count} isBasket={false} onPick={onPick}/>
+                    {cardProps !== undefined ? cardProps.map((item, index) => 
+                    <Card pose_name={item.pose_name} image_id={item.image_id} index={index} available_frame_count={item.available_frame_count} isBasket={false} onPick={onPick}/>)
+                    : ""}
                 </div>
         </ScWelcomePage>
     );

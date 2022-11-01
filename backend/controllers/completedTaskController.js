@@ -25,9 +25,9 @@ module.exports.addCompletedTask_post = async (req, res) => {
             }
         });
         const tasks = req.session.tasks;
-        const task = tasks.find(({_id}) => _id === req.body.task_id)
-        if(task.frames.length > 1){
-            task.frames.shift()
+        const task = tasks.find(({id}) => id === req.body.task_id)
+        if(task.frames[0].length > 1){
+            task.frames[0].shift()
             task.finished_frame_count += 1;
             res.status(201).send({tasks: tasks, isTaskFinished: false, message: "Task is added successfully" });
         }
@@ -83,11 +83,11 @@ module.exports.updateCompletedTask_post = async (req, res) => {
                 console.log("users::update::success");
             }
         });
-        task = req.session.tasks.find(({_id}) => _id === req.body.task_id)
-        task.frames.shift()
+        task = req.session.tasks.find(({id}) => id === req.body.task_id)
+        task.frames[0].shift()
         task.finished_frame_count += 1;
-        console.log(task.frames)
-        res.status(201).send({new_frame: task.frames, message: "Task is finished successfully" });
+        console.log(task.frames[0])
+        res.status(201).send({new_frame: task.frames[0], message: "Task is finished successfully" });
     } catch (error) {
         res.status(500).send({ message: "!Internal Server Error\n",error });
     }

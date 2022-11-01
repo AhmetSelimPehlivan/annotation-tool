@@ -1,8 +1,10 @@
 import Styled from "styled-components";
 const ScWelcomePage = Styled.div`
 .main{
-    width: 100%;
+    width: 100%;    
     display: flex;
+    justify-content: space-evenly;
+    flex-wrap: wrap;
 }
 ${({onSubmit}) => onSubmit
     ? `

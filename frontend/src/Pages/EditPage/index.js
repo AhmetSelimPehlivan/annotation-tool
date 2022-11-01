@@ -22,13 +22,13 @@ const [frame, setFrame] = useState([])
         await Axios.get('/getsession',{withCredentials: true}).then((response) =>{
           setTasks(response.data.tasks)
           if(task_id === undefined){
+            console.log("sss",response.data.tasks)
             task = response.data.tasks[0]
-            console.log(task)
-            setTask_id(task._id)
+            setTask_id(task.id)
           }
           else
-            task = response.data.tasks.find(({_id}) => _id === task_id)
-          setFrame(GetPointAndLines(task.frames[0]))
+            task = response.data.tasks.find(({id}) => id === task_id)
+          setFrame(GetPointAndLines(task.frames[0][0]))
         });
       } catch (error) {
           console.log("error ",error)
@@ -37,9 +37,10 @@ const [frame, setFrame] = useState([])
     fetchData()
   },[task_id]);
 
-  const onSubmit = async(lines) =>{
+  const onSubmit = async(lines, isEdited) =>{
     console.log("OnSubmit ")
-    let task = tasks.find(({_id}) => _id === task_id)
+    let task = tasks.find(({id}) => id === task_id)
+    console.log(task)
     await Axios.post('/addCompletedTask',{
       pose_name: task.pose_name,
       image_id: task.image_id,
@@ -52,8 +53,8 @@ const [frame, setFrame] = useState([])
           task = response.data.tasks[0]
         }
         else
-          task = response.data.tasks.find(({_id}) => _id === task_id)
-        setFrame(GetPointAndLines(task.frames[0]))
+          task = response.data.tasks.find(({id}) => id === task_id)
+        setFrame(GetPointAndLines(task.frames[0][0]))
     })};
   
     return (

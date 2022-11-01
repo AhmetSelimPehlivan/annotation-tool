@@ -21,7 +21,12 @@ module.exports.getKeypoint_post = async (req, res) => {
             }
             else {
                 //console.log("Keypoint::fetchOneByKey::success - " + JSON.stringify(data, null, 2));
-                res.status(201).send({Keypoints: data.Item.points.slice(req.body.frame_start, req.body.frame_end), message: "Keypoints are gotten successfully" });
+                console.log("frame_intervals ", req.body.frame_intervals)
+                const Keypoints = []
+                for (let i = 0; i < req.body.frame_intervals.length; i++) {
+                    Keypoints.push(data.Item.points.slice(req.body.frame_intervals[i][0], req.body.frame_intervals[i][1]))
+                }
+                res.status(201).send({keypoints : Keypoints, message: "Keypoints are gotten successfully" });
             }
         })
     } catch (error) {

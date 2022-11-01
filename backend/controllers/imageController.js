@@ -12,20 +12,16 @@ module.exports.add_Image_post = async (req, res) => {
 
 module.exports.get_Image_get = async (req, res) => {
     try {
-        const poseNames = []
-        const image_ids = []
-        const frame_counts = []
+        const image = []
         const images = await Image.find({})
         for (let index = 0; index < images.length; index++) {
-            poseNames.push(images[index].pose_name)
-            image_ids.push(images[index].image_id)
-            frame_counts.push(images[index].available_frame_count)
+            image.push({
+                pose_name: images[index].pose_name,
+                image_id: images[index].image_id,
+                available_frame_count: images[index].available_frame_count
+            })
         }
-        uniqueArray = poseNames.filter(function(item, pos,index) {
-                //console.log("i ",poseNames.indexOf(item) === pos)
-            return poseNames.indexOf(item) === pos;
-        })
-        res.status(201).send({pose_name: poseNames, image_id: image_ids, frame_count: frame_counts, available_frame_count: frame_counts, message: "Pose is gotten successfully" });
+        res.status(201).send({image: image, message: "Pose is gotten successfully" });
     } catch (error) {
         res.status(500).send({ message: "!Internal Server Error\n",error });
     }
@@ -34,22 +30,25 @@ module.exports.get_Image_get = async (req, res) => {
 module.exports.update_frame_post = async (req, res) => {
     try {
         const pose = await Image.find({pose_name: req.body.pose_name, image_id: req.body.image_id})
-        //console.log("pose ",pose)
+        const add_frame = []
         let frames = pose[0].total_frame
         let frame_request = req.body.frame_req
-        //console.log("frame ",frames)
+        console.log("frame ",frames)
         //console.log("frame_request ",frame_request)
         for (let i = 0; i < frames.length; i++) {
             if((frames[i][1]-frames[i][0]) < req.body.frame_req){
+                add_frame.push(frames[i])
                 frames.shift()
                 frame_request -= (frames[i][1]-frames[i][0])
             }
             else{
+                add_frame.push([frames[i][0],frame_request+frames[i][0]])
                 frames[i][0] += frame_request
             }
         }
-        if(await Image.updateOne({pose_name:  req.body.pose_name, image_id: req.body.image_id}, {$set: {total_frame: frames}}))
-            res.status(201).send({ message: "Pose is updated successfully" });
+        
+        if(await Image.updateOne({pose_name:  req.body.pose_name, image_id: req.body.image_id}, {$set: {total_frame: frames, available_frame_count: (pose[0].available_frame_count-frame_request)}}))
+            res.status(201).send({frame_intervals: add_frame, message: "Pose is updated successfully" });
         else
             res.status(500).send({ message: "!Pose is not updated\n"});
 
@@ -61,11 +60,18 @@ module.exports.update_frame_post = async (req, res) => {
 module.exports.remove_frame_post = async (req, res) => {
     try {
         const pose = await Image.find({pose_name: req.body.pose_name, image_id: req.body.image_id})
-        let frames = pose.total_frame
-        frames.push(req.body.frame_interval)
+        let frames = pose[0].total_frame
+        let frame_count = 0
+        console.log(req.body.frame_interval)
+        for (let i = 0; i < req.body.frame_interval.length; i++){
+            frames.push(req.body.frame_interval[i])
+            frame_count += req.body.frame_interval[i][1]-req.body.frame_interval[i][0]
+        }
         frames.sort((a, b) => a[0] - b[0]);
-        if(await Image.updateOne({pose_name:  req.body.pose_name, image_id: req.body.image_id}, {$set: {total_frame: frames}}))
-            res.status(201).send({ message: "Pose is updated successfully" });
+        if(await Image.updateOne({pose_name:  req.body.pose_name, image_id: req.body.image_id}, {$set: {total_frame: frames, available_frame_count: (pose[0].available_frame_count+frame_request)}})){
+            req.session.tasks = req.session.tasks.filter(({id}) => req.body.task_id !== id)
+            res.status(201).send({tasks: req.session.tasks, message: "Pose is updated successfully" });
+        }
         else
             res.status(500).send({ message: "!Pose is not updated\n"});
 

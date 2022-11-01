@@ -2,23 +2,24 @@ import ScCanvas from './ScCanvas';
 import { Stage, Layer, Line , Circle } from "react-konva";
 import { useState, useEffect } from "react";
 import { string, dict, bool } from 'prop-types';
-import { ATTRIBUTE_TYPES } from '../../Constants';
 import { handleDrag, handleDragStart, handleDragEnd, handleMouseMove, handleMouseUp} from '../../Constants/utils';
 
-const Canvas = ({window_size, selectedTool, selectedType, importJson, onSubmit}) => {
+const Canvas = ({window_size, selectedTool, importJson, onSubmit}) => {
 
 const [isDraging, setIsDraging] = useState(false);
 const [firstClick, setfirstClick] = useState(false);
 const [enterPress, setEnterPress] = useState(false);
-const [lineColor, setLineColor] = useState("green");
+const [onEdit, setOnEdit] = useState(false);
 const [lineCount, setLineCount] = useState(0);
 const [currentPoint, setcurrentPoint] = useState({});
+const [pointCounter, setPointCounter] = useState(0);
 const [newLine, setNewLine] = useState({draw: false});
 const [lines, setLines] = useState([]);
 const [point, setPoint] = useState([]);
-const [pointCounter, setPointCounter] = useState(0);
-console.log("CANVAS")
+
 useEffect(() => {
+  if(!onEdit) return
+  
   if (lineCount < lines.length){
     if(newLine.node === "internal")
       lines.pop()
@@ -45,12 +46,6 @@ useEffect(() => {
       setLines([...lines, {previous_id: pointCounter-1, next_id: pointCounter, x_start:point[point.length-1].x, y_start:point[point.length-1].y, x_end:currentPoint.x, y_end:currentPoint.y}]);
   }
 },[newLine,currentPoint,enterPress]);
-
-useEffect(() => {
-  const attribute = ATTRIBUTE_TYPES.find(({Name}) => Name === selectedType)
-  if(attribute != null)
-    setLineColor()
-},[selectedType]);
 
 useEffect(() => {
   if(Object.keys(importJson).length !== 0){
@@ -110,7 +105,7 @@ const removeLine = (drag, prev_id, nxt_id) => {
               {lines.map((element) => 
                   <Line
                     points={[element.x_start, element.y_start, element.x_end, element.y_end]}
-                    stroke={lineColor}
+                    stroke="green"
                     strokeWidth={4}
                     tension={0.2}
                     lineCap="round"
@@ -124,14 +119,19 @@ const removeLine = (drag, prev_id, nxt_id) => {
                   y={element.y}
                   width={12}
                   height={12}
-                  fill={lineColor}
+                  fill="green"
                   draggable
                 />
               )}
             </Layer>
           </Stage>
-          <button className='Submit-Button' onClick={() => onSubmit(lines)}>Submit</button>
-      </ScCanvas>
+          {onEdit 
+          ?<button className='Submit-Button' onClick={() => {setOnEdit(false); onSubmit(lines, true)}}>Submit</button>
+          :<div className='button-div'>
+            <button className='Edit-Button' onClick={() => setOnEdit(true)}>Edit</button>
+            <button className='Pass-Button' onClick={() => onSubmit(lines, false)}>Pass</button>
+          </div>}
+          </ScCanvas>
       </>
     );
 }
