@@ -26,18 +26,17 @@ useEffect(() => {
 const onPick = async (task_id,pose_name,image_id,frame_interval)=>{
     try {
         setIsSubmit(true)
-        await Axios.post('/removeTask',{
-            task_id: task_id,
-            dedicated_user:  userName
-        }).then( async () =>{console.log("cong Seric",task_id,frame_interval)
-           await Axios.post('/remove_frame_post',{
-                pose_name:  pose_name,
-                image_id:  image_id,
-                task_id : task_id,
-                frame_interval: frame_interval,
-            },{withCredentials: true}).then( async (response) =>{
-                setTasks(response.data.tasks)
-            });
+        await Axios.post('/remove_frame_post',{
+            pose_name:  pose_name,
+            image_id:  image_id,
+            task_id : task_id,
+            frame_interval: frame_interval,
+        },{withCredentials: true}).then( async (response) =>{
+            await Axios.post('/removeTask',{
+                task_id: task_id,
+                dedicated_user:  userName
+            })
+            setTasks(response.data.tasks)
         });
         setIsSubmit(false)
     } catch (error) {

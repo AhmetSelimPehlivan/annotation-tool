@@ -36,12 +36,14 @@ module.exports.update_frame_post = async (req, res) => {
         console.log("frame ",frames)
         //console.log("frame_request ",frame_request)
         for (let i = 0; i < frames.length; i++) {
-            if((frames[i][1]-frames[i][0]) < req.body.frame_req){
+            if((frames[i][1]-frames[i][0]) < frame_request){
                 add_frame.push(frames[i])
-                frames.shift()
                 frame_request -= (frames[i][1]-frames[i][0])
+                frames.shift()
+                i -= 1
             }
             else{
+                console.log(frames[i][0],",",frame_request,"()",frames[i][0])
                 add_frame.push([frames[i][0],frame_request+frames[i][0]])
                 frames[i][0] += frame_request
             }
@@ -61,13 +63,20 @@ module.exports.remove_frame_post = async (req, res) => {
     try {
         const pose = await Image.find({pose_name: req.body.pose_name, image_id: req.body.image_id})
         let frames = pose[0].total_frame
-        let frame_count = 0
-        console.log(req.body.frame_interval)
+        let frame_request = 0
         for (let i = 0; i < req.body.frame_interval.length; i++){
             frames.push(req.body.frame_interval[i])
-            frame_count += req.body.frame_interval[i][1]-req.body.frame_interval[i][0]
+            frame_request += req.body.frame_interval[i][1]-req.body.frame_interval[i][0]
         }
         frames.sort((a, b) => a[0] - b[0]);
+        
+        for (let i = 0; i < frames.length-1; i++)
+            if(frames[i][1] === frames[i+1][0]){
+                frames[i][1] = frames[i+1][1]
+                frames.splice(i+1,1)
+                i -= 1
+            }
+        console.log("frames",frames)
         if(await Image.updateOne({pose_name:  req.body.pose_name, image_id: req.body.image_id}, {$set: {total_frame: frames, available_frame_count: (pose[0].available_frame_count+frame_request)}})){
             req.session.tasks = req.session.tasks.filter(({id}) => req.body.task_id !== id)
             res.status(201).send({tasks: req.session.tasks, message: "Pose is updated successfully" });

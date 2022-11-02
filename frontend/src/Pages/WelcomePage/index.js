@@ -1,4 +1,4 @@
-import { useState, useEffect} from 'react';
+import { useState, useEffect, useRef} from 'react';
 import {socket} from "../../Constants/socket";
 import ScWelcomePage from './ScWelcomePage';
 import Navbar from '../../Components/Navbar';
@@ -9,11 +9,8 @@ const WelcomePage = () => {
     const userName = sessionStorage.getItem("user_name")
     const [cardProps,setCardProps] = useState([])
     const [isSubmit,setIsSubmit] = useState(false)
-    
-    useEffect(() => {console.log("UseEffect")
-        socket.on("connect", ()=>{
-            console.log(`You connected :, ${socket.id}`)
-        })
+    const socketRef = useRef();
+    useEffect(() => {
         async function fetchData(){
             try {
                 await Axios.get('/getImage').then((response) =>{
@@ -24,19 +21,26 @@ const WelcomePage = () => {
             }
         }
         fetchData()
-        return () => {socket.off('disconnect')};
     },[]);
-
+    
+    useEffect(() => {
+        socketRef.current = socket.on("recieve-available_frame_count", message =>{
+            console.log("message ",message)
+            console.log("copy_propsssssssssss ",cardProps)
+            const copy_props = cardProps
+            copy_props[message.image_index].available_frame_count=message.available_frame_count
+            setCardProps(copy_props)
+        })
+        return () => {socketRef.current.off('disconnect')};
+    },[socketRef]);
 
     const onPick = async (pose_name,image_id,image_index,frame_req)=>{
         try {
             setIsSubmit(true)
             const copy_props = cardProps
             copy_props[image_index].available_frame_count -= frame_req
-            //console.log("onPick ",copy_props)
+            
             socket.emit('available_frame_count',{image_index: image_index, available_frame_count: copy_props[image_index].available_frame_count})
-            setCardProps(copy_props)
-            //console.log(frame_start," - ",frame_req)
             console.log(frame_req)
             await Axios.post('/update_frame',{
                 pose_name:  pose_name,
@@ -51,6 +55,7 @@ const WelcomePage = () => {
                     frame_req: frame_req,
                     dedicated_user:  userName
                   },{withCredentials: true}).then( async(response) => {
+                    setCardProps(copy_props)
                     console.log("Succesfully ",response);
                 })
             });
@@ -62,13 +67,6 @@ const WelcomePage = () => {
         }
     }
     
-    if(socket !== undefined)
-    socket.on("recieve-available_frame_count", message =>{
-        const copy_props = cardProps
-        copy_props[message.image_index].available_frame_count=message.available_frame_count
-        console.log("copy_props ",copy_props)
-        setCardProps(copy_props)
-    })
     return (
         <ScWelcomePage onSubmit={isSubmit}>
             {isSubmit?
