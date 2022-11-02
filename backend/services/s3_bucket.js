@@ -1,3 +1,4 @@
+var jsonFile = require('./new_json.json');
 const Image = require('../models/Image');
 const zlib = require("zlib");
 var fs = require('fs');
@@ -23,16 +24,20 @@ const bucket_instance = () =>{
 }
 
 const getBucketFromS3 = async (bucketName) => {
-
+/*
 const params = { Bucket: bucketName }
 const s3 = bucket_instance();
 const bucketData = await s3.send(new ListObjectsCommand(params));
 const newFiles = await getNewFiles(bucketData.Contents)
-
+*/
+/*
   for (let j = 0; j < newFiles.length; j++)
     ImportJson(newFiles[j].pose_name, newFiles[j].file_id ,JSON.parse((await unzipFromS3(s3,newFiles[j].pose_name + "/" + newFiles[j].file_id, bucketName)).toString('utf-8')))
+*/
+  //for (let index = 0; index < jsonFile.length; index++) {
+    ImportJson("chaturanga", "new_json" ,[jsonFile])
+// }
 }
-
 const getNewFiles = async (bucketData_Contents) => {
 let newFiles = []
 let filename = bucketData_Contents[0].Key.split('/')
@@ -68,18 +73,40 @@ const streamToString = (stream) => new Promise((resolve, reject) => {
   });
 });
 
-const ImportJson = (name,image_id,data) => {
+const ImportJson = (name,image_id,datas) => {
   const keypoints = []
-  for (let index = 0; index < data.records.length; index++) {
+  const data = datas[0]
+  console.log("data", data.length)
+  console.log("data1", data[0].keypoints)
+  for (let index = 0; index < data.length; index++) {
     let points = []
-    for (let i = 0; i < data.records[index].keypoints.length; i++)
-      if(data.records[index].keypoints[i].xAxis === undefined)
-        points.push({xAxis: data.records[index].keypoints[i].x, yAxis: data.records[index].keypoints[i].y, bodyPart: data.records[index].keypoints[i].bodyPart})
+    points.push({xAxis: data[index].keypoints.nose.x, yAxis: data[index].keypoints.nose.y, bodyPart: "nose"})
+    points.push({xAxis: data[index].keypoints.left_shoulder.x, yAxis: data[index].keypoints.left_shoulder.y, bodyPart: "left_shoulder"})
+    points.push({xAxis: data[index].keypoints.right_shoulder.x, yAxis: data[index].keypoints.right_shoulder.y, bodyPart: "right_shoulder"})
+    points.push({xAxis: data[index].keypoints.left_elbow.x, yAxis: data[index].keypoints.left_elbow.y, bodyPart: "left_elbow"})
+    points.push({xAxis: data[index].keypoints.right_elbow.x, yAxis: data[index].keypoints.right_elbow.y, bodyPart: "right_elbow"})
+    points.push({xAxis: data[index].keypoints.left_wrist.x, yAxis: data[index].keypoints.left_wrist.y, bodyPart: "left_wrist"})
+    points.push({xAxis: data[index].keypoints.right_wrist.x, yAxis: data[index].keypoints.right_wrist.y, bodyPart: "right_wrist"})    
+    points.push({xAxis: data[index].keypoints.left_hip.x, yAxis: data[index].keypoints.left_hip.y, bodyPart: "left_hip"})
+    points.push({xAxis: data[index].keypoints.right_hip.x, yAxis: data[index].keypoints.right_hip.y, bodyPart: "right_hip"})
+    points.push({xAxis: data[index].keypoints.left_knee.x, yAxis: data[index].keypoints.left_knee.y, bodyPart: "left_knee"})
+    points.push({xAxis: data[index].keypoints.right_knee.x, yAxis: data[index].keypoints.right_knee.y, bodyPart: "right_knee"})
+    points.push({xAxis: data[index].keypoints.left_ankle.x, yAxis: data[index].keypoints.left_ankle.y, bodyPart: "left_ankle"})
+    points.push({xAxis: data[index].keypoints.right_ankle.x, yAxis: data[index].keypoints.right_ankle.y, bodyPart: "right_ankle"})
+    
+    /*
+      if(data[index].keypoints[i].xAxis === undefined)
+        points.push({xAxis: data[index].keypoints[i].x, yAxis: data[index].keypoints[i].y, bodyPart: data[index].keypoints[i].bodyPart})
        else
-        points.push({xAxis: data.records[index].keypoints[i].xAxis, yAxis: data.records[index].keypoints[i].yAxis, bodyPart: data.records[index].keypoints[i].bodyPart})
+        points.push({xAxis: data[index].keypoints[i].xAxis, yAxis: data[index].keypoints[i].yAxis, bodyPart: data[index].keypoints[i].bodyPart})
+    keypoints.push(points)*/
     keypoints.push(points)
   }
+  addNewKeypointsToDb(name,image_id,keypoints,keypoints.length)
   /*
+    addNewPosesToDb(name, image_id, data.records.length)
+    console.log("Success")
+    
   if(keypoints.length>400){
     for (let i = 0; i < Math.ceil(keypoints.length/400); i++)
       if( Math.floor(keypoints.length/400) > i)
@@ -91,6 +118,35 @@ const ImportJson = (name,image_id,data) => {
     addNewKeypointsToDb(name,image_id,keypoints,keypoints.length)
   }*/
 }
+
+/*
+const ImportJson = (name,image_id,data) => {
+  
+  const keypoints = []
+  for (let index = 0; index < data.records.length; index++) {
+    let points = []
+    for (let i = 0; i < data.records[index].keypoints.length; i++)
+      if(data.records[index].keypoints[i].xAxis === undefined)
+        points.push({xAxis: data.records[index].keypoints[i].x, yAxis: data.records[index].keypoints[i].y, bodyPart: data.records[index].keypoints[i].bodyPart})
+       else
+        points.push({xAxis: data.records[index].keypoints[i].xAxis, yAxis: data.records[index].keypoints[i].yAxis, bodyPart: data.records[index].keypoints[i].bodyPart})
+    keypoints.push(points)
+  }
+    addNewPosesToDb(name, image_id, data.records.length)
+    console.log("Success")
+    
+  if(keypoints.length>400){
+    for (let i = 0; i < Math.ceil(keypoints.length/400); i++)
+      if( Math.floor(keypoints.length/400) > i)
+        addNewKeypointsToDb(name,(image_id+"-"+(i+1)),keypoints.splice(i*400, (i+1)*400),400)
+      else
+        addNewKeypointsToDb(name,(image_id+"-"+(i+1)),keypoints.splice(i*400, keypoints.length-(i*400)),keypoints.length-(i*400))
+  }
+  else{
+    addNewKeypointsToDb(name,image_id,keypoints,keypoints.length)
+  }
+}
+*/
 
 const uploadBucketToS3 = async (bucketName) => {
   const s3 = bucket_instance();

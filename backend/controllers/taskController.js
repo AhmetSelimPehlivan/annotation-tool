@@ -27,37 +27,21 @@ module.exports.addTask_post = async (req, res) => {
                     res.status(500).send({ message: "!Keypoints::fetchOneByKey::error\n" });
                 }
                 else {
-                    //console.log("Keypoint::fetchOneByKey::success - " + JSON.stringify(data, null, 2));
-                    console.log("frame_intervals ", req.body.frame_intervals)
                     const Keypoints = []
                     for (let i = 0; i < req.body.frame_intervals.length; i++) {
                         Keypoints.push(data.Item.points.slice(req.body.frame_intervals[i][0], req.body.frame_intervals[i][1]))
                     }
-                    console.log(user_tasks.length+1)
-
-                    const user_same_task = await Task.find({pose_name: req.body.pose_name, image_id: req.body.image_id, dedicated_user: req.body.dedicated_user})
-                    
-                    console.log("user_same_task",user_same_task)
-                    if(user_same_task.length !== 0){
-                        console.log("hi")
-                        await Task.updateOne({pose_name: req.body.pose_name, image_id: req.body.image_id, dedicated_user: req.body.dedicated_user}, 
-                            {$push: {frames: Keypoints, frame_intervals: req.body.frame_intervals}})
-                        console.log(req.session.tasks)
-                    }
-                    else{
-                        const newTask = {
-                            id: user_tasks.length+1,
-                            pose_name: req.body.pose_name,
-                            image_id: req.body.image_id,
-                            frames: Keypoints,
-                            frame_intervals: req.body.frame_intervals,
-                            dedicated_user: req.body.dedicated_user,
-                            finished_frame_count: 0
-                        };
-                        await Task.create(newTask);
-                        console.log(user_tasks.length+1)
-                        req.session.tasks.push(newTask)
-                    }
+                    const newTask = {
+                        id: user_tasks.length+1,
+                        pose_name: req.body.pose_name,
+                        image_id: req.body.image_id,
+                        frames: Keypoints,
+                        frame_intervals: req.body.frame_intervals,
+                        dedicated_user: req.body.dedicated_user,
+                        finished_frame_count: 0
+                    };
+                    await Task.create(newTask);
+                    req.session.tasks.push(newTask)
                     res.status(201).send({ message: "Task is added successfully" });
                 }
             })

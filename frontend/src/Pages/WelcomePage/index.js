@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef} from 'react';
+import { useState, useEffect, useRef } from 'react';
 import {socket} from "../../Constants/socket";
 import ScWelcomePage from './ScWelcomePage';
 import Navbar from '../../Components/Navbar';
@@ -9,12 +9,15 @@ const WelcomePage = () => {
     const userName = sessionStorage.getItem("user_name")
     const [cardProps,setCardProps] = useState([])
     const [isSubmit,setIsSubmit] = useState(false)
-    const socketRef = useRef();
+    //const socketRef = useRef();
+    //const cardPropsRef = useRef();
+    
     useEffect(() => {
         async function fetchData(){
             try {
                 await Axios.get('/getImage').then((response) =>{
                     setCardProps(response.data.image)
+                    //cardPropsRef.current = cardProps;
                  });
             } catch (error) {
                 console.log("error ",error)
@@ -22,18 +25,14 @@ const WelcomePage = () => {
         }
         fetchData()
     },[]);
-    
-    useEffect(() => {
-        socketRef.current = socket.on("recieve-available_frame_count", message =>{
-            console.log("message ",message)
-            console.log("copy_propsssssssssss ",cardProps)
-            const copy_props = cardProps
-            copy_props[message.image_index].available_frame_count=message.available_frame_count
-            setCardProps(copy_props)
-        })
-        return () => {socketRef.current.off('disconnect')};
-    },[socketRef]);
 
+    socket.on("recieve-available_frame_count", message =>{
+        console.log("message ",message)
+        console.log("cardProps ",cardProps.current)
+        cardProps.current[message.image_index].available_frame_count=message.available_frame_count
+        setCardProps(cardProps.current)
+    })
+    
     const onPick = async (pose_name,image_id,image_index,frame_req)=>{
         try {
             setIsSubmit(true)

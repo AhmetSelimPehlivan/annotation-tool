@@ -18,7 +18,7 @@ const [lines, setLines] = useState([]);
 const [point, setPoint] = useState([]);
 
 useEffect(() => {
-  if(!onEdit) return
+  //if(!onEdit) return
   
   if (lineCount < lines.length){
     if(newLine.node === "internal")

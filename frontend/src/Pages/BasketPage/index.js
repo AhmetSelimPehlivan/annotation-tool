@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import {socket} from "../../Constants/socket";
 import ScBasketPage from './ScBasketPage';
 import Navbar from '../../Components/Navbar';
 import Card from '../../Components/Card';
@@ -9,6 +10,7 @@ const BasketPage = () => {
 const [tasks,setTasks] = useState([])
 const userName = sessionStorage.getItem("user_name")
 const [isSubmit,setIsSubmit] = useState(false)
+
 useEffect(() => {
     async function fetchData(){
         try {
@@ -26,6 +28,8 @@ useEffect(() => {
 const onPick = async (task_id,pose_name,image_id,frame_interval)=>{
     try {
         setIsSubmit(true)
+        //socket.emit('available_frame_count',{image_index: image_index, available_frame_count: copy_props[image_index].available_frame_count})
+            
         await Axios.post('/remove_frame_post',{
             pose_name:  pose_name,
             image_id:  image_id,

@@ -42,6 +42,7 @@ module.exports.login_post = async (req, res) => {
         const user = await User.login(req.body.user_name, req.body.password);
         const userTasks = await Task.find({dedicated_user: req.body.user_name});
         //const redis_response = await redisClient.set("taskuserTasks", userTasks);
+        console.log(user)
         req.session.user_name = user.user_name;
         req.session.role = user.role;
         req.session.tasks = userTasks;

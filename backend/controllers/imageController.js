@@ -49,7 +49,7 @@ module.exports.update_frame_post = async (req, res) => {
             }
         }
         
-        if(await Image.updateOne({pose_name:  req.body.pose_name, image_id: req.body.image_id}, {$set: {total_frame: frames, available_frame_count: (pose[0].available_frame_count-frame_request)}}))
+        if(await Image.updateOne({pose_name:  req.body.pose_name, image_id: req.body.image_id}, {$set: {total_frame: frames, available_frame_count: (pose[0].available_frame_count-req.body.frame_req)}}))
             res.status(201).send({frame_intervals: add_frame, message: "Pose is updated successfully" });
         else
             res.status(500).send({ message: "!Pose is not updated\n"});
