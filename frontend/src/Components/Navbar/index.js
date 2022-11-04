@@ -22,8 +22,6 @@ const Navbar = () => {
                 <li onClick={() => navigation("/Basket")}>My Basket</li>
                 <li onClick={() => navigation("/ImageSet")}>Image Set</li>
                 <li onClick={() => navigation("/Edit")}>Edit</li>
-                <li onClick={""}>Load Image</li>
-                <li onClick={""}>Settings</li>
             </ul>
             <div className='User-Section'>
                 <p>{userName}</p>

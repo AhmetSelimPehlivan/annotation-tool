@@ -5,11 +5,7 @@ display: flex;
 flex-direction: column;
 align-items: center;
 position: relative;
-margin-top: 10px;
 
-canvas{
-  margin-top: 10px;
-}
 .points{
   display: flex;
   position: absolute;

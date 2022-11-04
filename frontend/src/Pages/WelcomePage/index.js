@@ -10,14 +10,14 @@ const WelcomePage = () => {
     const [cardProps,setCardProps] = useState([])
     const [isSubmit,setIsSubmit] = useState(false)
     //const socketRef = useRef();
-    //const cardPropsRef = useRef();
-    
+    const cardPropsRef = useRef();
+
     useEffect(() => {
         async function fetchData(){
             try {
                 await Axios.get('/getImage').then((response) =>{
                     setCardProps(response.data.image)
-                    //cardPropsRef.current = cardProps;
+                    cardPropsRef.current = response.data.image;
                  });
             } catch (error) {
                 console.log("error ",error)
@@ -26,13 +26,16 @@ const WelcomePage = () => {
         fetchData()
     },[]);
 
-    socket.on("recieve-available_frame_count", message =>{
-        console.log("message ",message)
-        console.log("cardProps ",cardProps.current)
-        cardProps.current[message.image_index].available_frame_count=message.available_frame_count
-        setCardProps(cardProps.current)
-    })
-    
+    useEffect(() => {
+        socket.on("recieve-available_frame_count", message =>{
+            console.log("message ",message)
+            const copyProps = cardPropsRef.current
+            copyProps[message.image_index].available_frame_count=message.available_frame_count
+            console.log("cardProps ",copyProps)
+            setCardProps(copyProps)
+        })
+    },[socket])
+
     const onPick = async (pose_name,image_id,image_index,frame_req)=>{
         try {
             setIsSubmit(true)
@@ -74,8 +77,8 @@ const WelcomePage = () => {
             </div>:""}
             <Navbar/>
                 <div className='main'>
-                    {cardProps !== undefined ? cardProps.map((item, index) => 
-                    <Card pose_name={item.pose_name} image_id={item.image_id} index={index} available_frame_count={item.available_frame_count} isBasket={false} onPick={onPick}/>)
+                    {cardProps !== undefined 
+                    ? cardProps.map((item, index) => <Card pose_name={item.pose_name} image_id={item.image_id} index={index} available_frame_count={item.available_frame_count} isBasket={false} onPick={onPick}/>)
                     : ""}
                 </div>
         </ScWelcomePage>

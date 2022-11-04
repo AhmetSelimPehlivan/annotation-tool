@@ -95,7 +95,7 @@ const removeLine = (drag, prev_id, nxt_id) => {
         <Stage
           className="konva"
           width={window_size.x}
-          height={window_size.y-10}
+          height={window_size.y}
           onMousemove={(e) => handleMouseMove({e, setcurrentPoint, firstClick})}
           onMouseup={(e) => handleMouseUp({e, setPoint, setPointCounter, setLineCount, setfirstClick, removeLine, point, pointCounter, firstClick, lineCount, selectedTool, setIsDraging, isDraging})}
           onDragStart={(e) => handleDragStart({e, setIsDraging, removeLine})}

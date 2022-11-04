@@ -33,9 +33,11 @@ export const GetPointAndLines = (keypoints,window_size) =>{
         item.map((att,index) =>{
           const frame = keypoints.find(({bodyPart}) => bodyPart === att)
           if(index > 0){
-            lines.push({previous_id: counter-1, next_id: counter, x_start:point[point.length-1].x, y_start:point[point.length-1].y, x_end:frame.xAxis * (window_size.x), y_end:frame.yAxis * (window_size.y)})
+          //  lines.push({previous_id: counter-1, next_id: counter, x_start:point[point.length-1].x, y_start:point[point.length-1].y, x_end:frame.xAxis * (window_size.x) , y_end:frame.yAxis * (window_size.y)  })
+              lines.push({previous_id: counter-1, next_id: counter, x_start: point[point.length-1].x, y_start: point[point.length-1].y, x_end: frame.yAxis * (window_size.x) , y_end: frame.xAxis * (window_size.y + 50)})
           }
-          point.push({id: counter, x: frame.xAxis * (window_size.x), y: frame.yAxis * (window_size.y)})
+            point.push({id: counter, x: frame.yAxis * (window_size.x) , y: frame.xAxis * (window_size.y + 50)})
+          //  point.push({id: counter, x: frame.xAxis * (window_size.x) , y: frame.yAxis * (window_size.y) })
           counter++
         })
     });
