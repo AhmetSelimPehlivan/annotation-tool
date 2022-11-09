@@ -1,5 +1,5 @@
 const fs = require('fs')
-const {getBucketFromS3} = require('../services/s3_bucket')
+const {getBucketFromS3, uploadBucketToS3} = require('../services/s3_bucket')
 
 module.exports.readFromBucket = async(req, res) => {
     try {
@@ -20,24 +20,9 @@ module.exports.readFromBucket = async(req, res) => {
 
 module.exports.uploadToBucket = async(req, res) => {
     try {
-        //console.log("req ",req.body.lines)
-        
+        await uploadBucketToS3(process.env.AWS_FETCH_BUCKET_NAME);
+        res.status(201).send({message: " Ok "});
     } catch (error) {
-        
+        res.status(500).send({error: "error ",error});
     }
-    /*
-    try {
-        const bucketData = await getBucketFromS3(process.env.AWS_UPLOAD_BUCKET_NAME);
-        const fileStream = fs.createReadStream(file.path)
-
-        const uploadParams = {
-            Bucket: process.env.AWS_UPLOAD_BUCKET_NAME,
-            Body: fileStream,
-            Key: file.filename
-          }
-        
-        return s3.upload(uploadParams).promise()
-    } catch (error) {
-        res.status(500).send([]);
-    } */
 }

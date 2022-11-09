@@ -9,7 +9,6 @@ AWS.config.update({
   "accessKeyId": process.env.AWS_ACCESS_KEY_ID, "secretAccessKey":  process.env.AWS_SECRET_ACCESS_KEY
 });
 let dynamoClient = new AWS.DynamoDB.DocumentClient();
-
 // Set the region
 
 const bucket_instance = () =>{
@@ -35,7 +34,13 @@ const newFiles = await getNewFiles(bucketData.Contents)
     ImportJson(newFiles[j].pose_name, newFiles[j].file_id ,JSON.parse((await unzipFromS3(s3,newFiles[j].pose_name + "/" + newFiles[j].file_id, bucketName)).toString('utf-8')))
 */
   //for (let index = 0; index < jsonFile.length; index++) {
-    ImportJson("chaturanga", "new_json" ,[jsonFile])
+    ImportJson("chaturanga", "new_json_2" ,[jsonFile])
+    ImportJson("chaturanga", "new_json_3" ,[jsonFile])
+    ImportJson("chaturanga", "new_json_4" ,[jsonFile])
+    ImportJson("chaturanga", "new_json_5" ,[jsonFile])
+    ImportJson("chaturanga", "new_json_6" ,[jsonFile])
+    ImportJson("chaturanga", "new_json_7" ,[jsonFile])
+    ImportJson("chaturanga", "new_json_8" ,[jsonFile])
 // }
 }
 const getNewFiles = async (bucketData_Contents) => {
@@ -149,13 +154,24 @@ const ImportJson = (name,image_id,data) => {
 */
 
 const uploadBucketToS3 = async (bucketName) => {
-  const s3 = bucket_instance();
-  const params = {
-    Bucket: bucketName,
-    MaxKeys: 10 
+    var params = {
+      TableName: "CompletedTask",
+      Key: {
+        "pose_name": "chaturanga", 
+        "image_id": "new_json"
+      }
+    };
+    try {
+      dynamoClient.get(params, function (err, data) {
+          if (err) {
+              console.log("users::fetchOneByKey::error - " + JSON.stringify(err, null, 2));
+          }
+          else {
+              console.log("users::fetchOneByKey::success - " + JSON.stringify(data, null, 2));
+          }
+      })
+  } catch (error) {
   }
-  const bucketData = s3.listObjects(params).promise()
-  return bucketData
 }
 
 const addNewPosesToDb = async (pose_name,image_id,frame_count) =>{
@@ -195,4 +211,4 @@ const addNewKeypointsToDb = async (name,image_id,points,frame_count) =>{
   }
 }
 
-module.exports = {getBucketFromS3}
+module.exports = {getBucketFromS3, uploadBucketToS3}

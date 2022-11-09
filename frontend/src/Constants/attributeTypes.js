@@ -19,3 +19,9 @@ export const ATTRIBUTE_TYPE = {
     ['right_ankle','right_knee','right_hip','right_shoulder','right_elbow','right_wrist'],
     //['rightHip','rightKnee','rightAnkle']
   ];
+
+  export const ATTRIBUTE_COLORS = [
+    "#ffdb74",
+    "#abbee6",
+    "#f7453f"
+  ];

@@ -104,7 +104,6 @@ const UserLogin = () => {
                                 <input type="email" className="input" name="email" required onChange={(e)=>{ emailset(e.target.value)}} placeholder="Email" />
                                 <select onChange={(e) => setRole(e.target.value)} required >
                                     <option value="User">User</option>
-                                    <option value="Admin">Admin</option>
                                 </select>
                                 <input type="password"  className="input" name="password" minLength="8" maxLength="20" required onChange={(e)=>{ passwordset(e.target.value)}} placeholder="Password" />
                             </div>

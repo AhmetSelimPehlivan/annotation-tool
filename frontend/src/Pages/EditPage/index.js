@@ -6,7 +6,7 @@ import Canvas from '../../Components/Canvas';
 import LeftList from '../../Components/LeftList';
 import RightList from '../../Components/RightList'
 import { EditWidowSize, POSE_IMAGES } from '../../Constants';
-import { GetPointAndLines } from '../../ImportJson';
+import { GetPointAndLines, AddPointAndLines } from '../../ImportJson';
 
 const EditPage = () => {
 
@@ -40,13 +40,12 @@ const [imge, setImge] = useState(null)
   },[task_id]);
 
   const onSubmit = async(lines, isEdited) =>{
-    console.log("OnSubmit ")
     let task = tasks.find(({id}) => id === task_id)
-    console.log(task)
+
     await Axios.post('/addCompletedTask',{
       pose_name: task.pose_name,
       image_id: task.image_id,
-      poses: lines,
+      poses: AddPointAndLines(lines,EditWidowSize),
       task_id: task_id
       },{withCredentials: true}).then((response) => {
         setTasks(response.data.tasks)

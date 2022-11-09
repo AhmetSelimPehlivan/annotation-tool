@@ -4,6 +4,7 @@ const Image = require('../models/Image');
 module.exports.add_Image_post = async (req, res) => {
     try {// console.log(req.body)
         const image = await Image.create({ ...req.body });
+        
         res.status(201).send({ message: "Image is added successfully" });
     } catch (error) {
         res.status(500).send({ message: "!Internal Server Error\n",error });
@@ -33,27 +34,25 @@ module.exports.update_frame_post = async (req, res) => {
         const add_frame = []
         let frames = pose[0].total_frame
         let frame_request = req.body.frame_req
-        console.log("frame ",frames)
-        //console.log("frame_request ",frame_request)
-        for (let i = 0; i < frames.length; i++) {
-            if((frames[i][1]-frames[i][0]) < frame_request){
-                add_frame.push(frames[i])
-                frame_request -= (frames[i][1]-frames[i][0])
-                frames.shift()
-                i -= 1
-            }
-            else{
-                console.log(frames[i][0],",",frame_request,"()",frames[i][0])
-                add_frame.push([frames[i][0],frame_request+frames[i][0]])
-                frames[i][0] += frame_request
-            }
-        }
-        
-        if(await Image.updateOne({pose_name:  req.body.pose_name, image_id: req.body.image_id}, {$set: {total_frame: frames, available_frame_count: (pose[0].available_frame_count-req.body.frame_req)}}))
-            res.status(201).send({frame_intervals: add_frame, message: "Pose is updated successfully" });
-        else
-            res.status(500).send({ message: "!Pose is not updated\n"});
 
+            for (let i = 0; i < frames.length && frame_request !== 0; i++) {
+                if((frames[i][1]-frames[i][0]) <= frame_request){
+                    add_frame.push(frames[i])
+                    frame_request -= (frames[i][1]-frames[i][0])
+                    frames.shift()
+                    i -= 1
+                }
+                else{
+                    console.log(frames[i][0],",",frame_request,"()",frames[i][0])
+                    add_frame.push([frames[i][0],frame_request+frames[i][0]])
+                    frames[i][0] += frame_request
+                }
+            }
+            
+            if(await Image.updateOne({pose_name:  req.body.pose_name, image_id: req.body.image_id}, {$set: {total_frame: frames, available_frame_count: (pose[0].available_frame_count-req.body.frame_req)}}))
+                res.status(201).send({frame_intervals: add_frame, message: "Pose is updated successfully" });
+            else
+                res.status(501).send({message: "!Pose is not updated\n" });
     } catch (error) {
         res.status(500).send({ message: "!Internal Server Error\n",error });
     }

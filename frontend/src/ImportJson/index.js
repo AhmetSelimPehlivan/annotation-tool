@@ -39,14 +39,33 @@ export const GetPointAndLines = (keypoints,window_size) =>{
             point.push({id: counter, x: frame.yAxis * (window_size.x) , y: frame.xAxis * (window_size.y + 50)})
           //  point.push({id: counter, x: frame.xAxis * (window_size.x) , y: frame.yAxis * (window_size.y) })
           counter++
+          
         })
     });
   console.log(lines)
   return {point, lines}
 }
 
-export const Upload_file = (pose_name,image_id,frameIndex,setFrame) =>{
-  const lines = useSelector(selectLines)
+export const AddPointAndLines = (lines,window_size) =>{
   console.log(lines)
-  //const data = {poseData: pose_name, records: []}
+  /*
+  let counter = 0
+  let lines = []
+  let point = []
+    console.log("keypoints ",keypoints)
+    console.log("window_size ",window_size)
+    ATTRIBUTE_CONNECTIONS.map((item,index) => {
+        item.map((att,index) =>{
+          const frame = keypoints.find(({bodyPart}) => bodyPart === att)
+          if(index > 0){
+          //  lines.push({previous_id: counter-1, next_id: counter, x_start:point[point.length-1].x, y_start:point[point.length-1].y, x_end:frame.xAxis * (window_size.x) , y_end:frame.yAxis * (window_size.y)  })
+              lines.push({previous_id: counter-1, next_id: counter, x_start: point[point.length-1].x, y_start: point[point.length-1].y, x_end: frame.yAxis * (window_size.x) , y_end: frame.xAxis * (window_size.y + 50)})
+          }
+            point.push({id: counter, x: frame.yAxis * (window_size.x) , y: frame.xAxis * (window_size.y + 50)})
+          //  point.push({id: counter, x: frame.xAxis * (window_size.x) , y: frame.yAxis * (window_size.y) })
+          counter++
+          
+        })
+    });*/
+  return lines
 }

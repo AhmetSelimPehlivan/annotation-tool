@@ -16,6 +16,7 @@ const WelcomePage = () => {
         async function fetchData(){
             try {
                 await Axios.get('/getImage').then((response) =>{
+                    console.log("useEffect CARDPROPS")
                     setCardProps(response.data.image)
                     cardPropsRef.current = response.data.image;
                  });
@@ -38,10 +39,12 @@ const WelcomePage = () => {
 
     const onPick = async (pose_name,image_id,image_index,frame_req)=>{
         try {
+            if(frame_req < 1 || frame_req > cardProps[image_index].available_frame_count )
+                return alert('Frame Count Should Be In Valid Interval')
+            
             setIsSubmit(true)
             const copy_props = cardProps
             copy_props[image_index].available_frame_count -= frame_req
-            
             socket.emit('available_frame_count',{image_index: image_index, available_frame_count: copy_props[image_index].available_frame_count})
             console.log(frame_req)
             await Axios.post('/update_frame',{
@@ -49,19 +52,17 @@ const WelcomePage = () => {
                 image_id:  image_id,
                 frame_req: frame_req
             }).then( async (response) =>{
-                console.log("response ");
                 await Axios.post('/addTask',{
                     pose_name: pose_name,
                     image_id: image_id,
                     frame_intervals: response.data.frame_intervals,
                     frame_req: frame_req,
                     dedicated_user:  userName
-                  },{withCredentials: true}).then( async(response) => {
+                },{withCredentials: true}).then( async(response) => {
                     setCardProps(copy_props)
                     console.log("Succesfully ",response);
                 })
             });
-            console.log("update_frame ")
             setIsSubmit(false)
         } catch (error) {
             setIsSubmit(false)

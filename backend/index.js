@@ -13,7 +13,7 @@ const authRoute = require('./routes/authRoutes')
 const imageRoute = require('./routes/imageRoutes')
 const taskRoute = require('./routes/taskRoutes')
 const keypointRoute = require('./routes/keypointRoutes')
-const completedTaskRoute = require('./routes/completedTaskRoutes')
+// const completedTaskRoute = require('./routes/completedTaskRoutes')
 const s3Route = require('./routes/s3Routes')
 const app = express();
 const server = http.createServer(app);
@@ -54,7 +54,7 @@ app.use(authRoute);
 app.use(imageRoute);
 app.use(taskRoute);
 app.use(keypointRoute);
-app.use(completedTaskRoute)
+// app.use(completedTaskRoute)
 app.use(s3Route);
 
 AWS.config.update({
