@@ -38,7 +38,7 @@ export const ATTRIBUTE_TYPES = [
   {
     Name: ATTRIBUTE_TYPE.NOSE,
     Color: "#C0392B"
-  },
+  },/*
   {
     Name: ATTRIBUTE_TYPE.EYE,
     Color: "#E74C3C"
@@ -46,7 +46,7 @@ export const ATTRIBUTE_TYPES = [
   {
     Name: ATTRIBUTE_TYPE.EAR,
     Color: "#9B59B6"
-  },
+  },*/
   {
     Name: ATTRIBUTE_TYPE.SHOULDER,
     Color: "#8E44AD"

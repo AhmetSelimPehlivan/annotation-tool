@@ -2,6 +2,8 @@ import ScCanvas from './ScCanvas';
 import { Stage, Layer, Line , Circle } from "react-konva";
 import { useState, useEffect } from "react";
 import { string, dict, bool } from 'prop-types';
+import { ATTRIBUTE_TYPES } from '../../Constants';
+import { ATTRIBUTE_COLORS } from '../../Constants/attributeTypes';
 import { handleDrag, handleDragStart, handleDragEnd, handleMouseMove, handleMouseUp} from '../../Constants/utils';
 
 const Canvas = ({window_size, selectedTool, importJson, onSubmit}) => {
@@ -10,49 +12,12 @@ const [isDraging, setIsDraging] = useState(false);
 const [firstClick, setfirstClick] = useState(false);
 const [enterPress, setEnterPress] = useState(false);
 const [onEdit, setOnEdit] = useState(false);
-const [lineCount, setLineCount] = useState(0);
 const [currentPoint, setcurrentPoint] = useState({});
-const [pointCounter, setPointCounter] = useState(0);
-const [newLine, setNewLine] = useState({draw: false});
-const [lines, setLines] = useState([]);
 const [point, setPoint] = useState([]);
 
 useEffect(() => {
-  //if(!onEdit) return
-  
-  if (lineCount < lines.length){
-    if(newLine.node === "internal")
-      lines.pop()
-    lines.pop()
-  }
-    
-  if(isDraging){
-    if(newLine.node === "internal")
-      setLines([...lines,
-        {previous_id: newLine.previous_id-1, next_id: newLine.previous_id, x_start:newLine.xP_start, y_start:newLine.yP_start, x_end:currentPoint.x, y_end:currentPoint.y},
-        {previous_id: newLine.previous_id, next_id: newLine.next_id, x_start:currentPoint.x, y_start:currentPoint.y, x_end:newLine.xN_end, y_end:newLine.yN_end}
-      ]);
-    else if( newLine.node === "external")
-      setLines([...lines, {previous_id: newLine.previous_id, next_id: newLine.next_id, x_start:currentPoint.x, y_start:currentPoint.y, x_end:newLine.x_end, y_end:newLine.y_end}]);
-    else if( newLine.node === "external_end")
-      setLines([...lines, {previous_id: newLine.previous_id-1, next_id: newLine.previous_id, x_start:newLine.x_start, y_start:newLine.y_start, x_end:currentPoint.x, y_end:currentPoint.y}]);
-  }
-  else if(firstClick){
-    if(enterPress){
-      setfirstClick(false)
-      setEnterPress(false)
-    }
-    else
-      setLines([...lines, {previous_id: pointCounter-1, next_id: pointCounter, x_start:point[point.length-1].x, y_start:point[point.length-1].y, x_end:currentPoint.x, y_end:currentPoint.y}]);
-  }
-},[newLine,currentPoint,enterPress]);
-
-useEffect(() => {
-  if(Object.keys(importJson).length !== 0){
+  if(Object.keys(importJson).length !== 0)
     setPoint(importJson.point)
-    setLines(importJson.lines)
-    setLineCount(importJson.lines.length)
-  }
 },[importJson]);
 
 useEffect(() => {
@@ -68,27 +33,18 @@ useEffect(() => {
   };
 }, []);
 
+useEffect(() => {
+  console.log("isdrag")
+  if(isDraging){
+    let pointArr = [...point];
+    pointArr[currentPoint.id] = {id: parseInt(currentPoint.id), x: currentPoint.x, y: currentPoint.y, type: currentPoint.type}; 
+    setPoint(pointArr)
+  }
+  else{
 
-const removeLine = (drag, prev_id, nxt_id) => {
-  const line = lines.find(({previous_id, next_id}) => previous_id === (prev_id) && next_id === (nxt_id))
-  const line_prev = lines.find(({previous_id, next_id}) => previous_id === (prev_id-1) && next_id === (prev_id))
+  }
+},[isDraging,currentPoint,enterPress]);
 
-  if(line_prev !== undefined && line === undefined){
-    setLines(lines.filter(({previous_id, next_id}) => previous_id !== (prev_id-1) && next_id !== (prev_id)))
-    setLineCount(lineCount-1)
-    if(drag) setNewLine({node: "external_end", previous_id: prev_id, next_id: nxt_id, x_start: line_prev.x_start, y_start: line_prev.y_start, x_end: line_prev.x_end, y_end: line_prev.y_end})
-  }
-  else if(line_prev !== undefined){
-    setLines(lines.filter(({previous_id, next_id}) => previous_id !== (prev_id) && next_id !== (nxt_id) && previous_id !== (prev_id-1) && next_id !== (prev_id)))
-    setLineCount(lineCount-2)  
-    if(drag) setNewLine({node: "internal", previous_id: prev_id, next_id: nxt_id, xP_start: line_prev.x_start, yP_start: line_prev.y_start, xN_end: line.x_end, yN_end: line.y_end})
-  }
-  else if(line !== undefined){
-    setLines(lines.filter(({previous_id, next_id}) => previous_id !== (prev_id) && next_id !== (nxt_id)))
-    setLineCount(lineCount-1)
-    if(drag) setNewLine({node: "external", previous_id: prev_id, next_id: nxt_id, x_start: line.x_start, y_start: line.y_start, x_end: line.x_end, y_end: line.y_end})
-  }
-}
     return (
       <>
       <ScCanvas>
@@ -96,40 +52,42 @@ const removeLine = (drag, prev_id, nxt_id) => {
           className="konva"
           width={window_size.x}
           height={window_size.y}
-          onMousemove={(e) => handleMouseMove({e, setcurrentPoint, firstClick})}
-          onMouseup={(e) => handleMouseUp({e, setPoint, setPointCounter, setLineCount, setfirstClick, removeLine, point, pointCounter, firstClick, lineCount, selectedTool, setIsDraging, isDraging})}
-          onDragStart={(e) => handleDragStart({e, setIsDraging, removeLine})}
+          onMousemove={(e) => handleMouseMove({e, firstClick})}
+          onMouseup={(e) => handleMouseUp({e, setPoint, setfirstClick, point, firstClick, selectedTool, setIsDraging, isDraging})}
+          onDragStart={(e) => handleDragStart({e, setIsDraging})}
           onDragMove={(e) => handleDrag({e, setcurrentPoint})}
-          onDragEnd={(e) => handleDragEnd({e, setLineCount, setNewLine, lineCount, newLine})}>
+          onDragEnd={(e) => handleDragEnd({e})}>
             <Layer>
-              {lines.map((element) => 
+              {point.map((element,index) =>
+              <>
+                {index>1 && index%7 !== 0 && element.type !== undefined ?
                   <Line
-                    points={[element.x_start, element.y_start, element.x_end, element.y_end]}
-                    stroke="green"
-                    strokeWidth={4}
-                    tension={0.2}
-                    lineCap="round"
-                  ></Line>)}
-
-              {point.map((element) =>
-                  <Circle
-                  id = {element.id+""}
-                  key={element.id}
-                  x={element.x}
-                  y={element.y}
-                  width={12}
-                  height={12}
-                  fill="green"
-                  draggable
+                  points={[point[index-1].x, point[index-1].y, element.x, element.y]}
+                  stroke={ATTRIBUTE_COLORS[parseInt(index/7)+1]}
+                  strokeWidth={4}
+                  tension={0.2}
+                  lineCap="round"
+                  ></Line>: ""}
+                <Circle
+                id = {element.id+""}
+                key={element.id}
+                type={element.type}
+                x={element.x}
+                y={element.y}
+                width={12}
+                height={12}
+                fill={element.type === "nose" || element.type === undefined ? ATTRIBUTE_COLORS[0] : ATTRIBUTE_COLORS[parseInt(index/7)+1] }
+                draggable
                 />
+              </>
               )}
             </Layer>
           </Stage>
           {onEdit 
-          ?<button className='Submit-Button' onClick={() => {setOnEdit(false); onSubmit(lines, true)}}>Submit</button>
+          ?<button className='Submit-Button' onClick={() => {setOnEdit(false); onSubmit(point, true)}}>Submit</button>
           :<div className='button-div'>
             <button className='Edit-Button' onClick={() => setOnEdit(true)}>Edit</button>
-            <button className='Pass-Button' onClick={() => onSubmit(lines, false)}>Pass</button>
+            <button className='Pass-Button' onClick={() => onSubmit(point, false)}>Pass</button>
           </div>}
           </ScCanvas>
       </>

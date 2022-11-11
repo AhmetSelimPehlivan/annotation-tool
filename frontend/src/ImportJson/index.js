@@ -36,13 +36,13 @@ export const GetPointAndLines = (keypoints,window_size) =>{
           //  lines.push({previous_id: counter-1, next_id: counter, x_start:point[point.length-1].x, y_start:point[point.length-1].y, x_end:frame.xAxis * (window_size.x) , y_end:frame.yAxis * (window_size.y)  })
               lines.push({previous_id: counter-1, next_id: counter, x_start: point[point.length-1].x, y_start: point[point.length-1].y, x_end: frame.yAxis * (window_size.x) , y_end: frame.xAxis * (window_size.y + 50)})
           }
-            point.push({id: counter, x: frame.yAxis * (window_size.x) , y: frame.xAxis * (window_size.y + 50)})
+            point.push({id: counter, x: frame.yAxis * (window_size.x), y: frame.xAxis * (window_size.y + 50), type: att})
           //  point.push({id: counter, x: frame.xAxis * (window_size.x) , y: frame.yAxis * (window_size.y) })
           counter++
           
         })
     });
-  console.log(lines)
+  console.log(point)
   return {point, lines}
 }
 
