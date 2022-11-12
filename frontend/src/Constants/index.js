@@ -26,11 +26,6 @@ export const REGION_SHAPE = [
     Name: REGION_TYPES.ERASER,
     Icon: EraserIcon,
     Cursor: ""
-  },
-  {
-    Name: REGION_TYPES.CLICK,
-    Icon: ClickIcon,
-    Cursor: ""
   }
 ];
 

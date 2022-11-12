@@ -1,7 +1,8 @@
 import { REGION_TYPES } from './regionTypes';
 export const handleDrag = ({e, setcurrentPoint}) => {
   const currentPoint = e.target.attrs
-  setcurrentPoint({id: currentPoint.id, x: currentPoint.x, y: currentPoint.y, type: currentPoint.type})
+  console.log(currentPoint)
+  setcurrentPoint({id: currentPoint.id, x: currentPoint.x, y: currentPoint.y, type: currentPoint.type, pre_index: currentPoint.pre_index, next_index: currentPoint.next_index})
 }
 
 export const handleDragStart = ({e, setIsDraging}) => {

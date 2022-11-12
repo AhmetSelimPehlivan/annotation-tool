@@ -1,5 +1,5 @@
 import ScCanvas from './ScCanvas';
-import { Stage, Layer, Line , Circle } from "react-konva";
+import { Stage, Layer, Line , Circle, Text } from "react-konva";
 import { useState, useEffect } from "react";
 import { string, dict, bool } from 'prop-types';
 import { ATTRIBUTE_TYPES } from '../../Constants';
@@ -37,7 +37,7 @@ useEffect(() => {
   console.log("isdrag")
   if(isDraging){
     let pointArr = [...point];
-    pointArr[currentPoint.id] = {id: parseInt(currentPoint.id), x: currentPoint.x, y: currentPoint.y, type: currentPoint.type}; 
+    pointArr[currentPoint.id] = {id: parseInt(currentPoint.id), x: currentPoint.x, y: currentPoint.y, type: currentPoint.type, pre_index: currentPoint.pre_index, next_index: currentPoint.next_index}; 
     setPoint(pointArr)
   }
   else{
@@ -60,25 +60,39 @@ useEffect(() => {
             <Layer>
               {point.map((element,index) =>
               <>
-                {index>1 && index%7 !== 0 && element.type !== undefined ?
+                {element.next_index !== undefined ?
                   <Line
-                  points={[point[index-1].x, point[index-1].y, element.x, element.y]}
+                  points={[element.x, element.y, point[index+1].x, point[index+1].y]}
                   stroke={ATTRIBUTE_COLORS[parseInt(index/7)+1]}
                   strokeWidth={4}
                   tension={0.2}
+                  zIndex={1}
                   lineCap="round"
-                  ></Line>: ""}
+                  ></Line>: ""
+                }
                 <Circle
                 id = {element.id+""}
                 key={element.id}
                 type={element.type}
                 x={element.x}
                 y={element.y}
-                width={12}
-                height={12}
+                width={16}
+                height={16}
+                pre_index={element.pre_index}
+                next_index={element.next_index}
+                zIndex={2}
                 fill={element.type === "nose" || element.type === undefined ? ATTRIBUTE_COLORS[0] : ATTRIBUTE_COLORS[parseInt(index/7)+1] }
                 draggable
                 />
+                <Text
+                  text={element.id}
+                  x={element.x-5.65685}
+                  y={element.y-5.65685}
+                  fontSize={13}
+                  fill= 'black'
+                  listening= {false}
+                  zIndex={3}
+                ></Text>
               </>
               )}
             </Layer>

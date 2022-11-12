@@ -2,7 +2,7 @@ import Tool from '../Tool';
 import ScLeftList from './ScLeftList';
 import { REGION_SHAPE } from '../../Constants';
 import {prototype, string} from 'prop-types';
-import { ATTRIBUTE_CONNECTIONS, ATTRIBUTE_COLORS } from '../../Constants/attributeTypes';
+import { ATTRIBUTE_KEYPOINTS, ATTRIBUTE_COLORS } from '../../Constants/attributeTypes';
 const LeftList = ({onSelect, selectedTool, onSelectedType}) => {
     return (
         <ScLeftList>
@@ -16,11 +16,11 @@ const LeftList = ({onSelect, selectedTool, onSelectedType}) => {
                <li>
                     <p className="list-header">Keypoint List</p>
                     <div className='keypoint-div'>
-                        {ATTRIBUTE_CONNECTIONS.map((keypoints,list_index) =>
                         <ul className='keypoint-list'>
-                            {keypoints.map((keypoint,index) => <li className='keypoint-item' style={{'color': ATTRIBUTE_COLORS[list_index]}}>{index+1} - {keypoint}</li>)}
-                        </ul>
+                        {ATTRIBUTE_KEYPOINTS.map((keypoint,list_index) =>
+                            <li className='keypoint-item' style={{'color': ATTRIBUTE_COLORS[list_index>0 ? Math.ceil(list_index/6) : list_index]}}>{list_index+1} - {keypoint}</li>
                         )}
+                        </ul>
                     </div>
                </li>
             </ul>
