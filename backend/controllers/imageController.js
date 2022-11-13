@@ -2,7 +2,7 @@ const Image = require('../models/Image');
 
 // controller actions
 module.exports.add_Image_post = async (req, res) => {
-    try {// console.log(req.body)
+    try {
         const image = await Image.create({ ...req.body });
         
         res.status(201).send({ message: "Image is added successfully" });
@@ -43,7 +43,6 @@ module.exports.update_frame_post = async (req, res) => {
                     i -= 1
                 }
                 else{
-                    console.log(frames[i][0],",",frame_request,"()",frames[i][0])
                     add_frame.push([frames[i][0],frame_request+frames[i][0]])
                     frames[i][0] += frame_request
                 }
@@ -75,7 +74,6 @@ module.exports.remove_frame_post = async (req, res) => {
                 frames.splice(i+1,1)
                 i -= 1
             }
-        console.log("frames",frames)
         if(await Image.updateOne({pose_name:  req.body.pose_name, image_id: req.body.image_id}, {$set: {total_frame: frames, available_frame_count: (pose[0].available_frame_count+frame_request)}})){
             req.session.tasks = req.session.tasks.filter(({id}) => req.body.task_id !== id)
             res.status(201).send({tasks: req.session.tasks, message: "Pose is updated successfully" });
@@ -89,7 +87,6 @@ module.exports.remove_frame_post = async (req, res) => {
 }
 module.exports.get_Frame_get = async (req, res) => {
     try {
-        console.log("GetFrame ",req.body)
         Image.find({pose_name: req.body.pose_name})
         res.status(201).send({keypoints: req.body.keypoints})
     } catch (error) {

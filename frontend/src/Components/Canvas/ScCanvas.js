@@ -21,7 +21,11 @@ position: relative;
     fill: #4FC323;
   }
 }
-
+.EditModeDiv{
+  position: absolute;
+  width: ${({window_size}) => window_size.x}px;
+  height: ${({window_size}) => window_size.y}px;
+}
 button{
   color: white;
   border-radius: 10px;

@@ -1,8 +1,7 @@
 import { REGION_TYPES } from './regionTypes';
 export const handleDrag = ({e, setcurrentPoint}) => {
   const currentPoint = e.target.attrs
-  console.log(currentPoint)
-  setcurrentPoint({id: currentPoint.id, x: currentPoint.x, y: currentPoint.y, type: currentPoint.type, pre_index: currentPoint.pre_index, next_index: currentPoint.next_index})
+  setcurrentPoint({id: currentPoint.id, x: currentPoint.x, y: currentPoint.y, type: currentPoint.type, prev_id: currentPoint.prev_id, next_id: currentPoint.next_id})
 }
 
 export const handleDragStart = ({e, setIsDraging}) => {
@@ -16,7 +15,6 @@ export const handleDragEnd = ({e})=>{
 export const handleMouseMove = ({e, firstClick}) => {
   if (!firstClick) return;
   const currentPoint = e.currentTarget.getPointerPosition()
-  console.log(e)
   //setcurrentPoint({id: currentPoint.index, x: currentPoint.x, y: currentPoint.y, type: currentPoint.type})
 };
 
@@ -25,6 +23,7 @@ export const handleMouseUp = ({e, setPoint, setfirstClick, point, firstClick, se
     setIsDraging(false)
     return
   }
+  /*
   const currentPoint = e.currentTarget.getPointerPosition()
   if(selectedTool === REGION_TYPES.LINE || selectedTool === REGION_TYPES.POINT){
     setPoint([...point, {id: point.length, x: currentPoint.x, y: currentPoint.y, type: undefined }])
@@ -36,7 +35,11 @@ export const handleMouseUp = ({e, setPoint, setfirstClick, point, firstClick, se
   }
   else if(selectedTool === REGION_TYPES.ERASER){
     const pt = e.target.attrs
-    if(pt.id !== null)
-      setPoint(point.filter(({id}) => id !== (pt.id-0)))
-  }
+    if(pt.id !== null){
+      let pointArr = [...point];
+      pointArr.find(({next_id}) => next_id === (pt.id-0)).next_id = undefined
+      pointArr.find(({pre_id}) => pre_id === (pt.id-0)).pre_id = undefined
+      setPoint(pointArr.filter(({id}) => id !== (pt.id-0)))
+    }
+  }*/
 };

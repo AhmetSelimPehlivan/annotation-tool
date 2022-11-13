@@ -55,7 +55,6 @@ module.exports.getCompletedTask_post = async (req, res) => {
             }
             else {
                 res.status(201).send({data: data, message: "Tasks are gotten successfully" });
-                //console.log("users::fetchOneByKey::success - " + JSON.stringify(data, null, 2));
             }
         })
     } catch (error) {
@@ -86,7 +85,6 @@ module.exports.updateCompletedTask_post = async (req, res) => {
         task = req.session.tasks.find(({id}) => id === req.body.task_id)
         task.frames[0].shift()
         task.finished_frame_count += 1;
-        console.log(task.frames[0])
         res.status(201).send({new_frame: task.frames[0], message: "Task is finished successfully" });
     } catch (error) {
         res.status(500).send({ message: "!Internal Server Error\n",error });

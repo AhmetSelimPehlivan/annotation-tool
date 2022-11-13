@@ -18,6 +18,10 @@ const EditPage = Styled.div`
             opacity: 1 !important;
             outline: none;
         }
+        .EditModeDiv{
+            width: ${({window_size}) => window_size.x}px;
+            height: ${({window_size}) => window_size.y}px;
+        }
     }
 `;
 export default EditPage;

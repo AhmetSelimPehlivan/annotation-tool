@@ -42,7 +42,6 @@ module.exports.login_post = async (req, res) => {
         const user = await User.login(req.body.user_name, req.body.password);
         const userTasks = await Task.find({dedicated_user: req.body.user_name});
         
-        console.log(user.user_name)
         if(user.user_name === undefined)
             res.status(500).send({ message: user });
         else{

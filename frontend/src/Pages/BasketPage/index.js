@@ -16,7 +16,6 @@ useEffect(() => {
         try {
             await Axios.get('/getsession',{withCredentials: true}).then((response) =>{
                 setTasks(response.data.tasks)
-                console.log(response.data.tasks)
             });
         } catch (error) {
             console.log("error ",error)

@@ -52,7 +52,7 @@ const UserLogin = () => {
         });
     },[]);
 
-    const addUser = async () => { console.log(user_name,email,password)
+    const addUser = async () => {
         try {
             if(!emailValidator.test(email)){
                 setIsCreated(false)
@@ -79,7 +79,7 @@ const UserLogin = () => {
     }
 
     const userAuthorization = async () => {
-        try {console.log("userAuthorization ")
+        try {
             await Axios.post('/login',{
                 user_name:  userid_login,
                 password:  password_login
@@ -120,7 +120,7 @@ const UserLogin = () => {
                             <div  className="form-holder">
                                 <input type="text" className="input" name="user_name" required onChange={(e)=>{ userid_loginset(e.target.value)}} placeholder="User Name" />
                                 <input type="password" className="input" name="password" minLength="8" maxLength="20" required onChange={(e)=>{ password_loginset(e.target.value)}} placeholder="Password" />
-                            </div>{console.log(" s2 ",wrongLogin)}
+                            </div>
                             {
                                 <div className='login-info'>
                                     {wrongLogin!=="" ? <p>{wrongLogin}</p> : ""}

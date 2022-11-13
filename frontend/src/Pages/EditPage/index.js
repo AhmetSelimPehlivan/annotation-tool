@@ -6,7 +6,7 @@ import Canvas from '../../Components/Canvas';
 import LeftList from '../../Components/LeftList';
 import RightList from '../../Components/RightList'
 import { EditWidowSize, POSE_IMAGES } from '../../Constants';
-import { GetPointAndLines, AddPointAndLines } from '../../ImportJson';
+import { GetPointAndLines, addJsonToFrame } from '../../ImportJson';
 
 const EditPage = () => {
 
@@ -30,8 +30,8 @@ const [imge, setImge] = useState(null)
           }
           else
             task = response.data.tasks.find(({id}) => id === task_id)
-          setFrame(GetPointAndLines(task.frames[0][0],EditWidowSize))
-        });
+          setFrame({frame_name: task.frames[0][0].frame, keypoints: GetPointAndLines(task.frames[0][0],EditWidowSize)})
+          });
       } catch (error) {
           console.log("error ",error)
       }
@@ -39,25 +39,25 @@ const [imge, setImge] = useState(null)
     fetchData()
   },[task_id]);
 
-  const onSubmit = async(lines, isEdited) =>{
+  const onSubmit = async(frame_name, keypoints, isEdited) =>{
     let task = tasks.find(({id}) => id === task_id)
-
     await Axios.post('/addCompletedTask',{
       pose_name: task.pose_name,
       image_id: task.image_id,
-      poses: AddPointAndLines(lines,EditWidowSize),
+      frame: addJsonToFrame(frame_name,keypoints,EditWidowSize),
       task_id: task_id
       },{withCredentials: true}).then((response) => {
-        setTasks(response.data.tasks)
         if(response.data.isTaskFinished){
-          //Finish Task
           task = response.data.tasks[0]
+          setTask_id(task.id)
         }
         else
           task = response.data.tasks.find(({id}) => id === task_id)
-        setFrame(GetPointAndLines(task.frames[0][0],EditWidowSize))
-    })};
-  
+          
+        setFrame({frame_name: task.frames[0][0].frame, keypoints: GetPointAndLines(task.frames[0][0],EditWidowSize)})
+      })
+  };
+
     return (
         <>
         <Navbar/>
@@ -73,7 +73,7 @@ const [imge, setImge] = useState(null)
                   id='IMG'
                   src={imge}
                   ></img>
-                <Canvas window_size={EditWidowSize} selectedTool={selectedTool} selectedType={selectedType} importJson={frame} onSubmit={(lines) => onSubmit(lines)}/>
+                <Canvas window_size={EditWidowSize} selectedTool={selectedTool} selectedType={selectedType} importJson={frame} onSubmit={(frame_name, points, isedit) => onSubmit(frame_name, points, isedit)}/>
             </div>
             <RightList tasks={tasks} onSelect={(id) => setTask_id(id)}/>
         </ScEditPage>

@@ -71,7 +71,7 @@ mongoose.connect(process.env.DB_CONNECTION, {
 // Web Socket.io
 
 io.on("connection", (socket) => {
-  console.log("User Socket Connected")
+  console.log(`User Connected: ${socket.id}`);
   socket.on("disconnect", ()=> console.log('diiss'));
   socket.on("available_frame_count", message => {
     socket.broadcast.emit("recieve-available_frame_count",message)

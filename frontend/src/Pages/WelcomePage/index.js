@@ -9,14 +9,12 @@ const WelcomePage = () => {
     const userName = sessionStorage.getItem("user_name")
     const [cardProps,setCardProps] = useState([])
     const [isSubmit,setIsSubmit] = useState(false)
-    //const socketRef = useRef();
     const cardPropsRef = useRef();
 
     useEffect(() => {
         async function fetchData(){
             try {
                 await Axios.get('/getImage').then((response) =>{
-                    console.log("useEffect CARDPROPS")
                     setCardProps(response.data.image)
                     cardPropsRef.current = response.data.image;
                  });
@@ -26,17 +24,17 @@ const WelcomePage = () => {
         }
         fetchData()
     },[]);
-
+    
     useEffect(() => {
-        socket.on("recieve-available_frame_count", message =>{
-            console.log("message ",message)
-            const copyProps = cardPropsRef.current
-            copyProps[message.image_index].available_frame_count=message.available_frame_count
-            console.log("cardProps ",copyProps)
-            setCardProps(copyProps)
-        })
-    },[socket])
+    }, [socket]);
 
+    socket.on("recieve-available_frame_count", (message) => {
+        const copyProps = cardPropsRef.current
+        copyProps[message.image_index].available_frame_count=message.available_frame_count
+        console.log("cardProps ",copyProps)
+        setCardProps(copyProps)
+    });
+    
     const onPick = async (pose_name,image_id,image_index,frame_req)=>{
         try {
             if(frame_req < 1 || frame_req > cardProps[image_index].available_frame_count )
@@ -46,7 +44,7 @@ const WelcomePage = () => {
             const copy_props = cardProps
             copy_props[image_index].available_frame_count -= frame_req
             socket.emit('available_frame_count',{image_index: image_index, available_frame_count: copy_props[image_index].available_frame_count})
-            console.log(frame_req)
+
             await Axios.post('/update_frame',{
                 pose_name:  pose_name,
                 image_id:  image_id,
@@ -78,6 +76,8 @@ const WelcomePage = () => {
             </div>:""}
             <Navbar/>
                 <div className='main'>
+                    {console.log(cardProps[0].available_frame_count)}
+                    {cardProps[0].available_frame_count}
                     {cardProps !== undefined 
                     ? cardProps.map((item, index) => <Card pose_name={item.pose_name} image_id={item.image_id} index={index} available_frame_count={item.available_frame_count} isBasket={false} onPick={onPick}/>)
                     : ""}

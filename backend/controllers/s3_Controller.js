@@ -5,7 +5,6 @@ module.exports.readFromBucket = async(req, res) => {
     try {
         const bucketData = await getBucketFromS3(process.env.AWS_FETCH_BUCKET_NAME);
         const {Contents=[]} = bucketData;
-        //console.log("*** Contents ",Contents)
         res.status(201).send(Contents.map( content => {
             return {
                 key: content.Key,

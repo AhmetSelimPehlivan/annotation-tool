@@ -20,7 +20,6 @@ module.exports.getKeypoint_post = async (req, res) => {
                 console.log("Keypoints::fetchOneByKey::error - " + JSON.stringify(err, null, 2));
             }
             else {
-                //console.log("Keypoint::fetchOneByKey::success - " + JSON.stringify(data, null, 2));
                 console.log("frame_intervals ", req.body.frame_intervals)
                 const Keypoints = []
                 for (let i = 0; i < req.body.frame_intervals.length; i++) {

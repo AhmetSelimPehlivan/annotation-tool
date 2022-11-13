@@ -2,7 +2,7 @@ import ScRightList from './ScRightList';
 import {prototype, array} from 'prop-types';
 
 const RightList = ({tasks,onSelect}) => {
-    //{console.log(tasks)}
+    
     return (
         <ScRightList>
             <ul className="right-List">

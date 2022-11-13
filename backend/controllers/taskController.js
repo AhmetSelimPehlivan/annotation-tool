@@ -54,7 +54,6 @@ module.exports.addTask_post = async (req, res) => {
 module.exports.getTask_post = async (req, res) => {
     try {
         const userTasks = await Task.find({dedicated_user: req.body.dedicated_user, id: req.body.task_id})
-        //console.log(userTasks)
         res.status(201).send({tasks: userTasks, message: "Tasks are gotten successfully" });
         //res.status(201).send({pose_name: userTasks.pose_name, image_id: userTasks.image_id, frame_interval: userTasks.frame_interval, finished_frame_count: userTasks.finished_frame_count, message: "Tasks are gotten successfully" });
     } catch (error) {
@@ -71,18 +70,17 @@ module.exports.removeTask_post = async (req, res) => {
 }
 
 module.exports.addCompletedTask_post = async (req, res) => {
-    try {
-        var params = {
-            TableName: "CompletedTask",
-            Key: { "pose_name": req.body.pose_name, "image_id": req.body.image_id },
-            UpdateExpression: "set poses = :newPoses, frame_count = :new_frame_count",
-            ExpressionAttributeValues: {
-                ":newPoses": req.body.poses,
-                ":new_frame_count": +1
-            },
-            ReturnValues: "UPDATED_NEW"
-        };
-        docClient.update(params, function (err, data) {
+    try { 
+        console.log("Hello",req.body)
+
+        docClient.put({
+            TableName: 'CompletedTask',
+            Item:{
+                image_id: req.body.image_id,
+                pose_name: req.body.pose_name, 
+                frame: req.body.frame
+            }
+          },function (err, data){
             if (err) {
                 console.log("users::update::error - " + JSON.stringify(err, null, 2));
             } else {
