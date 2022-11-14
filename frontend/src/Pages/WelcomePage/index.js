@@ -31,8 +31,13 @@ const WelcomePage = () => {
         setCardProps([...copyProps])
     })
     socket.on("recieve-readd_frame_count", (message) =>{
-        const card = cardProps.find(({image_id}) => message.image_id === image_id)
-        console.log("card ",card)
+        let frames_count = 0
+        const copyProps = cardPropsRef.current
+        message.re_add.forEach(element => {
+            frames_count += element[1]-element[0]
+        });
+        copyProps.find(({image_id}) => message.image_id === image_id).available_frame_count += frames_count
+        setCardProps([...copyProps])
     })
     const onPick = async (pose_name,image_id,image_index,frame_req)=>{
         try {

@@ -6,7 +6,7 @@ import { ATTRIBUTE_COLORS } from '../../Constants/attributeTypes';
 import { handleDrag, handleDragStart, handleDragEnd, handleMouseMove, handleMouseUp} from '../../Constants/utils';
 
 const Canvas = ({window_size, selectedTool, importJson, onSubmit}) => {
-console.log("Last ",importJson)
+  
 const [isDraging, setIsDraging] = useState(false);
 const [firstClick, setfirstClick] = useState(false);
 const [enterPress, setEnterPress] = useState(false);
