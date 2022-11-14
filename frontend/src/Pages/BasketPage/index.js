@@ -7,8 +7,8 @@ import Axios from '../../Api/axios'
 
 const BasketPage = () => {
 
-const [tasks,setTasks] = useState([])
 const userName = sessionStorage.getItem("user_name")
+const [tasks,setTasks] = useState([])
 const [isSubmit,setIsSubmit] = useState(false)
 
 useEffect(() => {
@@ -27,7 +27,8 @@ useEffect(() => {
 const onPick = async (task_id,pose_name,image_id,frame_interval)=>{
     try {
         setIsSubmit(true)
-        //socket.emit('available_frame_count',{image_index: image_index, available_frame_count: copy_props[image_index].available_frame_count})
+        console.log("REMOVE")
+        socket.emit('re_add_frames',{image_id: image_id, re_add: frame_interval})
             
         await Axios.post('/remove_frame_post',{
             pose_name:  pose_name,

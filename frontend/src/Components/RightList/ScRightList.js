@@ -53,7 +53,6 @@ const ScRightList = Styled.div`
                 text-align: center;
                 font-weight: bold;
               }
-              
             &:after {
                 position: absolute;
                 content: "";
@@ -63,8 +62,8 @@ const ScRightList = Styled.div`
                 margin-top: -.5em;
                 transition: all .3s ease-out;
               }
-              
-            &:hover:after {
+            
+            &:hover:after{
                 left: -.5em;
                 border-left-color: #f9dd94;
               }

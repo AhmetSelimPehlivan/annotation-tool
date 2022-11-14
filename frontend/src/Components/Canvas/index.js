@@ -6,7 +6,7 @@ import { ATTRIBUTE_COLORS } from '../../Constants/attributeTypes';
 import { handleDrag, handleDragStart, handleDragEnd, handleMouseMove, handleMouseUp} from '../../Constants/utils';
 
 const Canvas = ({window_size, selectedTool, importJson, onSubmit}) => {
-
+console.log("Last ",importJson)
 const [isDraging, setIsDraging] = useState(false);
 const [firstClick, setfirstClick] = useState(false);
 const [enterPress, setEnterPress] = useState(false);
@@ -15,10 +15,11 @@ const [currentPoint, setcurrentPoint] = useState({});
 const [point, setPoint] = useState([]);
 
 useEffect(() => {
-  if(Object.keys(importJson).length !== 0){
+  if(Object.keys(importJson).length !== 0)
     setPoint(importJson.keypoints)
-    setcurrentPoint({})
-  }
+  else
+    setPoint([])
+  setcurrentPoint({})
 },[importJson]);
 
 useEffect(() => {
@@ -39,9 +40,6 @@ useEffect(() => {
     let pointArr = [...point];
     pointArr[currentPoint.id] = {id: parseInt(currentPoint.id), x: currentPoint.x, y: currentPoint.y, type: currentPoint.type, prev_id: currentPoint.prev_id, next_id: currentPoint.next_id}; 
     setPoint(pointArr)
-  }
-  else{
-
   }
 },[isDraging,currentPoint,enterPress]);
 
@@ -95,12 +93,14 @@ useEffect(() => {
             </Layer>
           </Stage>
           {onEdit ? "" : <div className='EditModeDiv'></div>}
-          {onEdit 
-          ?<button className='Submit-Button' onClick={() => {setOnEdit(false); onSubmit((importJson.frame_name), point, true)}}>Submit</button>
+          {point.length > 0 ?
+          onEdit ?<button className='Submit-Button' onClick={() => {setOnEdit(false); onSubmit((importJson.frame_name), point, true)}}>Submit</button>
           :<div className='button-div'>
             <button className='Edit-Button' onClick={() => setOnEdit(true)}>Edit</button>
             <button className='Pass-Button' onClick={() => onSubmit((importJson.frame_name), point, false)}>Pass</button>
-          </div>}
+          </div>
+          : ""}
+
           </ScCanvas>
       </>
     );

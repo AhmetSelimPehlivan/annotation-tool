@@ -25,16 +25,15 @@ const WelcomePage = () => {
         fetchData()
     },[]);
     
-    useEffect(() => {
-    }, [socket]);
-
-    socket.on("recieve-available_frame_count", (message) => {
+    socket.on("recieve-available_frame_count", (message) =>{
         const copyProps = cardPropsRef.current
         copyProps[message.image_index].available_frame_count=message.available_frame_count
-        console.log("cardProps ",copyProps)
-        setCardProps(copyProps)
-    });
-    
+        setCardProps([...copyProps])
+    })
+    socket.on("recieve-readd_frame_count", (message) =>{
+        const card = cardProps.find(({image_id}) => message.image_id === image_id)
+        console.log("card ",card)
+    })
     const onPick = async (pose_name,image_id,image_index,frame_req)=>{
         try {
             if(frame_req < 1 || frame_req > cardProps[image_index].available_frame_count )
@@ -76,8 +75,6 @@ const WelcomePage = () => {
             </div>:""}
             <Navbar/>
                 <div className='main'>
-                    {console.log(cardProps[0].available_frame_count)}
-                    {cardProps[0].available_frame_count}
                     {cardProps !== undefined 
                     ? cardProps.map((item, index) => <Card pose_name={item.pose_name} image_id={item.image_id} index={index} available_frame_count={item.available_frame_count} isBasket={false} onPick={onPick}/>)
                     : ""}

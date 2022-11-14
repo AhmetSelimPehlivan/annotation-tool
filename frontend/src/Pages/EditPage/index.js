@@ -14,14 +14,14 @@ const [selectedTool, setselectedTool] = useState("");
 const [selectedType, setselectedType] = useState("");
 const [task_id, setTask_id] = useState()
 const [tasks, setTasks] = useState([])
-const [frame, setFrame] = useState([])
+const [frame, setFrame] = useState({})
 const [imge, setImge] = useState(null)
 
   useEffect(() => {
     const fetchData = async() => {
       try {
-        let task;
         await Axios.get('/getsession',{withCredentials: true}).then((response) =>{
+          let task;
           setTasks(response.data.tasks)
           if(task_id === undefined){
             task = response.data.tasks[0]
@@ -30,6 +30,7 @@ const [imge, setImge] = useState(null)
           }
           else
             task = response.data.tasks.find(({id}) => id === task_id)
+
           setFrame({frame_name: task.frames[0][0].frame, keypoints: GetPointAndLines(task.frames[0][0],EditWidowSize)})
           });
       } catch (error) {
@@ -47,14 +48,20 @@ const [imge, setImge] = useState(null)
       frame: addJsonToFrame(frame_name,keypoints,EditWidowSize),
       task_id: task_id
       },{withCredentials: true}).then((response) => {
-        if(response.data.isTaskFinished){
+        if(response.data.isTaskFinished)
           task = response.data.tasks[0]
-          setTask_id(task.id)
-        }
         else
           task = response.data.tasks.find(({id}) => id === task_id)
-          
-        setFrame({frame_name: task.frames[0][0].frame, keypoints: GetPointAndLines(task.frames[0][0],EditWidowSize)})
+
+          if(task === undefined){
+            setFrame({})
+            setTasks([])
+          }
+          else{
+            setTasks(response.data.tasks)
+            setTask_id(task.id)
+          }
+
       })
   };
 

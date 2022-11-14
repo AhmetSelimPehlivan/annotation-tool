@@ -4,8 +4,6 @@ import {prototype, string, array, bool, number} from 'prop-types';
 
 const Card = ({task_id, pose_name, image_id, index, frame_count, available_frame_count, isBasket, onPick}) => {
     const [get_frame, setGet_frame] = useState(0);
-    console.log("ASd")
-    console.log("available_frame_count ",available_frame_count)
     return (
         <ScCard>
             <ul className="list">

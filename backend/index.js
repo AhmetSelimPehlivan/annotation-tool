@@ -76,6 +76,9 @@ io.on("connection", (socket) => {
   socket.on("available_frame_count", message => {
     socket.broadcast.emit("recieve-available_frame_count",message)
   })
+  socket.on("re_add_frames", message => {
+    socket.broadcast.emit("recieve-readd_frame_count",message)
+  })
 });
 
 server.listen(process.env.PORT)
