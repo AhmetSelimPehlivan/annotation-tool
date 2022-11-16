@@ -13,7 +13,6 @@ const authRoute = require('./routes/authRoutes')
 const imageRoute = require('./routes/imageRoutes')
 const taskRoute = require('./routes/taskRoutes')
 const keypointRoute = require('./routes/keypointRoutes')
-// const completedTaskRoute = require('./routes/completedTaskRoutes')
 const s3Route = require('./routes/s3Routes')
 const app = express();
 const server = http.createServer(app);

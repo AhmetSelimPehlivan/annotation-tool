@@ -1,6 +1,14 @@
-const fs = require('fs')
 const {getBucketFromS3, uploadBucketToS3} = require('../services/s3_bucket')
+const {getImageFromS3} = require('../services/s3_getImage')
 
+module.exports.readImageFromBucket = async(req, res) => {
+    try {
+        const bucketData = await getImageFromS3(process.env.AWS_FETCH_BUCKET_NAME,req.body.frame_id);
+        res.status(201).send({bucketData: bucketData});
+    } catch (error) {
+        res.status(500).send([]);
+    }
+}
 module.exports.readFromBucket = async(req, res) => {
     try {
         const bucketData = await getBucketFromS3(process.env.AWS_FETCH_BUCKET_NAME);

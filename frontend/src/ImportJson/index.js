@@ -1,25 +1,4 @@
-import { ATTRIBUTE_CONNECTIONS, ATTRIBUTE_KEYPOINTS } from '../Constants/attributeTypes'
-
-export const GetFrameIntervals = (Frames) =>{
-  let frames = []
-  Frames.map((element,index) =>{
-      let frame_interval = []
-      let frame_length = parseInt(element.length/100)
-      for (let i = 0; i < frame_length; i++)
-          frame_interval.push("["+i*100+"-"+((i*100)+99)+"]")
-      frame_interval.push("["+frame_length*100+"-"+((frame_length*100)+element.length%100)+"]")
-      frames.push(frame_interval)
-  })
-  return frames
-}
-
-export const GetFrameLengths = (Frames) =>{
-  let frames = []
-  Frames.map((element) =>{
-      frames.push(element.length)
-  })
-  return frames
-}
+import { ATTRIBUTE_CONNECTIONS } from '../Constants/attributeTypes'
 
 export const GetPointAndLines = (frame,window_size) =>{
   let counter = 0
@@ -34,7 +13,7 @@ export const GetPointAndLines = (frame,window_size) =>{
             next_id = counter+1
           if(index > 0)
             pre_id = counter-1
-          point.push({id: counter, x: frame.yAxis * (window_size.x), y: frame.xAxis * (window_size.y), type: att, pre_id: pre_id, next_id: next_id})
+          point.push({id: counter, x: frame.yAxis * (window_size.x+50), y: frame.xAxis * (window_size.y+50), type: att, pre_id: pre_id, next_id: next_id})
           counter++          
         })
     });

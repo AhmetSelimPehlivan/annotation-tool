@@ -33,7 +33,7 @@ useEffect(() => {
   return () => {
     document.removeEventListener('keydown', keyDownHandler);
   };
-}, []);
+});
 
 useEffect(() => {
   if(isDraging){

@@ -1,14 +1,11 @@
-import {BrowserRouter as Router, useNavigate, useLocation } from 'react-router-dom';
+import {useNavigate, useLocation } from 'react-router-dom';
 import  React,{useEffect, useState} from "react";
-import { useDispatch } from 'react-redux';
-import { setUserRole, setUserName } from '../../Api/Redux/authReducer';
 import { emailValidator, passwordValidator } from '../../Constants';
 import ScUserLogin from "./ScUserLogin";
 import Axios from '../../Api/axios';
 
 const UserLogin = () => {
     const navigation = useNavigate();
-    const dispatch = useDispatch()
     const [isCreated, setIsCreated] = useState(false)
     const [save_msg, setsave_msg] = useState("")
     const [wrongLogin, setwrongLogin] = useState("")
@@ -22,7 +19,7 @@ const UserLogin = () => {
     const from = location.state?.from?.pathname || "/ImageSet";
     
     useEffect(() => {
-        if(sessionStorage.getItem("role") == "User")
+        if(sessionStorage.getItem("role") === "User")
             navigation(from, { replace: true })
         const loginBtn = document.getElementById('login');
         const signupBtn = document.getElementById('signup');
@@ -50,7 +47,7 @@ const UserLogin = () => {
                 }
             });
         });
-    },[]);
+    });
 
     const addUser = async () => {
         try {
@@ -99,14 +96,14 @@ const UserLogin = () => {
                 <div  className="form-structor">
                     <div  className="signup">
                         <h2  className="form-title" id="signup"><span>or</span>Sign up</h2>
-                            <div  className="form-holder">
+                            <form  className="form-holder">
                                 <input type="text" className="input" name="user_name" minLength="3" maxLength="20" required onChange={(e)=>{ user_nameset(e.target.value)}} placeholder="User Name" />
                                 <input type="email" className="input" name="email" required onChange={(e)=>{ emailset(e.target.value)}} placeholder="Email" />
                                 <select onChange={(e) => setRole(e.target.value)} required >
                                     <option value="User">User</option>
                                 </select>
                                 <input type="password"  className="input" name="password" minLength="8" maxLength="20" required onChange={(e)=>{ passwordset(e.target.value)}} placeholder="Password" />
-                            </div>
+                            </form>
                             {save_msg !== "" ?
                                 <div className='save-info'>
                                     <p>{save_msg}</p>
@@ -117,10 +114,10 @@ const UserLogin = () => {
                     <div  className="login slide-up">
                         <div  className="center">
                             <h2  className="form-title" id="login"><span>or</span>Log in</h2>
-                            <div  className="form-holder">
+                            <form  className="form-holder">
                                 <input type="text" className="input" name="user_name" required onChange={(e)=>{ userid_loginset(e.target.value)}} placeholder="User Name" />
                                 <input type="password" className="input" name="password" minLength="8" maxLength="20" required onChange={(e)=>{ password_loginset(e.target.value)}} placeholder="Password" />
-                            </div>
+                            </form>
                             {
                                 <div className='login-info'>
                                     {wrongLogin!=="" ? <p>{wrongLogin}</p> : ""}

@@ -1,4 +1,4 @@
-import {BrowserRouter as Router,useNavigate, useLocation } from 'react-router-dom';
+import {useNavigate, useLocation } from 'react-router-dom';
 import React from 'react';
 import Axios from '../../Api/axios';
 import ScNavbar from './ScNavbar';

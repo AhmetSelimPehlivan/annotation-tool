@@ -2,6 +2,7 @@ const Image = require('../models/Image');
 const zlib = require("zlib");
 var fs = require('fs');
 var AWS = require("aws-sdk");
+const unzipper = require("unzipper");
 const { S3Client, GetObjectCommand, ListObjectsCommand } = require("@aws-sdk/client-s3");
 AWS.config.update({
   "region": "eu-west-3",
@@ -55,6 +56,7 @@ const unzipFromS3 = async(s3Client ,key, bucket) => {
       };
       const command = new GetObjectCommand(options);
       const { Body } = await s3Client.send(command);
+      console.log(Body)
       const uploadedS3File = await streamToString(Body);
       if(key.includes(".zip") === false)
         resolve(uploadedS3File)

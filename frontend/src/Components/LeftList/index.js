@@ -10,7 +10,7 @@ const LeftList = ({onSelect, selectedTool, onSelectedType}) => {
                <li>
                     <p className="list-header">Tools</p>
                     <div className='shape-tools'>
-                        {REGION_SHAPE.map(item => <Tool name={item.Name} icon={item.Icon} onSelect={onSelect} isSelected={selectedTool==item.Name}/>)}
+                        {REGION_SHAPE.map(item => <Tool name={item.Name} icon={item.Icon} onSelect={onSelect} isSelected={selectedTool===item.Name}/>)}
                     </div>
                </li>
                <li>

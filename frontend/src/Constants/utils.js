@@ -1,4 +1,3 @@
-import { REGION_TYPES } from './regionTypes';
 export const handleDrag = ({e, setcurrentPoint}) => {
   const currentPoint = e.target.attrs
   setcurrentPoint({id: currentPoint.id, x: currentPoint.x, y: currentPoint.y, type: currentPoint.type, prev_id: currentPoint.prev_id, next_id: currentPoint.next_id})
@@ -14,7 +13,7 @@ export const handleDragEnd = ({e})=>{
 
 export const handleMouseMove = ({e, firstClick}) => {
   if (!firstClick) return;
-  const currentPoint = e.currentTarget.getPointerPosition()
+  //const currentPoint = e.currentTarget.getPointerPosition()
   //setcurrentPoint({id: currentPoint.index, x: currentPoint.x, y: currentPoint.y, type: currentPoint.type})
 };
 
