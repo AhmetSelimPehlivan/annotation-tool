@@ -1,25 +1,22 @@
-import { Routes, Route, BrowserRouter } from "react-router-dom";
-import React, { Suspense } from 'react';
-import UserLogin from './Pages/UserLogin';
-import RequireAuth from "./RequireAuth";
-import { ROLES } from './Constants/roles';
+import { Routes, Route } from "react-router-dom";
+import React, { Suspense, useContext } from 'react';
+import { AuthContext } from "./Context/AuthContext"
 
+const UserLogin = React.lazy(() => import('./Pages/UserLogin'));
 const WelcomePage = React.lazy(() => import('./Pages/WelcomePage'));
 const EditPage = React.lazy(() => import('./Pages/EditPage'));
 const BasketPage = React.lazy(() => import('./Pages/BasketPage'));
 function App() {
+  const authContext = useContext(AuthContext);
+  console.log("auth ",authContext)
   return (
     <Suspense fallback={<p>Loading...</p>}>
-      <BrowserRouter>
-        <Routes>
-        <Route path="/" element={<UserLogin/>} />
-          <Route element={<RequireAuth allowedRoles={[...Object.values(ROLES)]} />}>
-            <Route path="/ImageSet" element={<WelcomePage />}/>
-            <Route path="/Basket" element={<BasketPage />}/>
-            <Route path="/Edit" element={<EditPage />} />
-          </Route>
-        </Routes>
-      </BrowserRouter>
+      <Routes>
+        <Route path="/" element={<UserLogin/>}/>
+        <Route path="/ImageSet" element={<WelcomePage />}/>
+        <Route path="/Basket" element={<BasketPage />}/>
+        <Route path="/Edit" element={<EditPage />} />
+      </Routes>
     </Suspense>
   );
 }

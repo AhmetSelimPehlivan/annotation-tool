@@ -1,8 +1,10 @@
 import {useNavigate, useLocation } from 'react-router-dom';
 import  React,{useEffect, useState} from "react";
+import { AuthContext } from "../../Context/AuthContext"
 import { emailValidator, passwordValidator } from '../../Constants';
 import ScUserLogin from "./ScUserLogin";
 import Axios from '../../Api/axios';
+import {prototype} from 'prop-types';
 
 const UserLogin = () => {
     const navigation = useNavigate();

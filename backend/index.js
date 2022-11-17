@@ -37,6 +37,7 @@ app.use(session({
     httpOnly: true,
     secure: false
   },
+  isAuth: false,
   secret: process.env.JWTPRIVATEKEY,
   resave: false,
   saveUninitialized: false,

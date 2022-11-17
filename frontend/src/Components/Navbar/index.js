@@ -30,10 +30,4 @@ const Navbar = () => {
         </ScNavbar>
     );
 }
-
-Navbar.propTypes = {
-};
-  
-Navbar.defaultProps = {
-};
 export default Navbar;

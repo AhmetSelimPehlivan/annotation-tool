@@ -8,9 +8,8 @@ module.exports.signup_get = (req, res) => {
 
 module.exports.usersession_get = (req, res) => {
     try {
-        if(req.session.role =="User"){
+        if(req.session.role =="User")
             res.status(201).send({user_name: req.session.user_name, tasks: req.session.tasks, role: req.session.role, message: "User Access" });
-        }
         else
             res.status(500).send({ message: "!Acces Denied\n",error });
     } catch (error) {
@@ -20,8 +19,19 @@ module.exports.usersession_get = (req, res) => {
         console.log("Hello User");
     else
         console.log("Acces Denied");
-    
 }
+module.exports.userauth_get = (req, res) => {
+    try {
+        if(req.session.isAuth === undefined){
+            res.status(201).send({isAuth: false, message: "!Acces Denied\n" });
+        }
+        else if(req.session.isAuth === true)
+            res.status(201).send({isAuth: true, message:"Hello User" });
+    } catch (error) {
+        res.status(500).send({message: "!Acces Denied\n", error });
+    }
+}
+
 
 module.exports.signup_post = async (req, res) => {
     try {
@@ -48,6 +58,7 @@ module.exports.login_post = async (req, res) => {
             req.session.user_name = user.user_name;
             req.session.role = user.role;
             req.session.tasks = userTasks;
+            req.session.isAuth = true;
             res.status(200).send({ user_name: user.user_name, role: user.role, message: "logged in successfully" });    
         }
     } catch (error) {
