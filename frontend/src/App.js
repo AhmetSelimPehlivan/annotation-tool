@@ -1,14 +1,12 @@
 import { Routes, Route } from "react-router-dom";
-import React, { Suspense, useContext } from 'react';
-import { AuthContext } from "./Context/AuthContext"
+import React, { Suspense } from 'react';
 
 const UserLogin = React.lazy(() => import('./Pages/UserLogin'));
 const WelcomePage = React.lazy(() => import('./Pages/WelcomePage'));
 const EditPage = React.lazy(() => import('./Pages/EditPage'));
 const BasketPage = React.lazy(() => import('./Pages/BasketPage'));
 function App() {
-  const authContext = useContext(AuthContext);
-  console.log("auth ",authContext)
+
   return (
     <Suspense fallback={<p>Loading...</p>}>
       <Routes>

@@ -11,9 +11,9 @@ const AuthProvider = ({ children }) => {
   useEffect(() => {
     const getCurrentUser = async () => {
         await Axios.get('/getisAuth',{withCredentials: true}).then((response) =>{
-            if(!response.data.isAuth)
-              navigate("/", { replace: true });
-            setIsAuthenticated(response.data.isAuth)
+          setIsAuthenticated(response.data.isAuth)
+          if(!response.data.isAuth)
+            navigate("/", { replace: true });
           });
       };
     getCurrentUser();
