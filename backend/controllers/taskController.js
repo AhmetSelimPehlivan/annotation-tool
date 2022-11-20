@@ -1,11 +1,12 @@
 const Task = require('../models/Task');
-var AWS = require("aws-sdk");
+const AWS = require("aws-sdk");
+require('dotenv/config');
+
 AWS.config.update({
-    "region": "eu-west-3",
+    "region": process.env.AWS_DB_REGION,
     "accessKeyId": process.env.AWS_ACCESS_KEY_ID, "secretAccessKey":  process.env.AWS_SECRET_ACCESS_KEY
   });
 let docClient = new AWS.DynamoDB.DocumentClient();
-
 // controller actions
 module.exports.addTask_post = async (req, res) => {
     try {
@@ -71,13 +72,14 @@ module.exports.removeTask_post = async (req, res) => {
 
 module.exports.addCompletedTask_post = async (req, res) => {
     try { 
-        console.log("Hello",req.body)
+        console.log("Hello",req.body.frame_name)
 
         docClient.put({
             TableName: 'CompletedTask',
             Item:{
                 image_id: req.body.image_id,
-                pose_name: req.body.pose_name, 
+                frame_name: req.body.frame_name,
+                pose_name: req.body.pose_name,
                 frame: req.body.frame
             }
           },function (err, data){

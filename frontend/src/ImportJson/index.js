@@ -21,9 +21,10 @@ export const GetPointAndLines = (frame,window_size) =>{
   return point
 }
 
-export const addJsonToFrame = (frame_id,keypoints,window_size) =>{
+export const addJsonToFrame = (frame_id,keypoints,isEdit,window_size) =>{
   return {
     "frame": frame_id,
+    "isEdit": isEdit,
     "keypoints": {
       "nose": {x: (keypoints[0].y-25)/window_size.y, y: keypoints[0].x/window_size.x },
       "left_ankle": {x: (keypoints[1].y-25)/window_size.y, y: keypoints[1].x/window_size.x},

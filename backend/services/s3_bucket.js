@@ -1,11 +1,13 @@
 const Image = require('../models/Image');
 const zlib = require("zlib");
-var fs = require('fs');
-var AWS = require("aws-sdk");
-const unzipper = require("unzipper");
+const fs = require('fs');
+const AWS = require("aws-sdk");
+require('dotenv/config');
+
+
 const { S3Client, GetObjectCommand, ListObjectsCommand } = require("@aws-sdk/client-s3");
 AWS.config.update({
-  "region": "eu-west-3",
+  "region": process.env.AWS_DB_REGION,
   "accessKeyId": process.env.AWS_ACCESS_KEY_ID, "secretAccessKey":  process.env.AWS_SECRET_ACCESS_KEY
 });
 let dynamoClient = new AWS.DynamoDB.DocumentClient();
@@ -103,12 +105,14 @@ const ImportJson = (name,image_id,data) => {
     addNewKeypointsToDb(name,(counter === 0 ? image_id : (image_id+"-"+(counter+1))),frames,frames.length)
 }
 
-const uploadBucketToS3 = async (bucketName) => {
-    var params = {
+const uploadBucketToS3 = async (bucketName,pose_name) => {
+  const finishedImages = await Image.find({available_frame_count: 398})  
+  console.log(finishedImages)  
+  var params = {
       TableName: "CompletedTask",
       Key: {
-        "pose_name": "chaturanga", 
-        "image_id": "new_json"
+        "pose_name": finishedImages[0].pose_name,
+        "image_id": finishedImages[0].image_id
       }
     };
     try {

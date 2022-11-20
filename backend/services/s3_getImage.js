@@ -1,5 +1,5 @@
-
-var AWS = require("aws-sdk");
+const AWS = require("aws-sdk");
+require('dotenv/config');
 
 const getImageFromS3 = async(bucketName, frame_id) =>{
     AWS.config.setPromisesDependency();

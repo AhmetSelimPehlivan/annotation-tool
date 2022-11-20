@@ -16,9 +16,9 @@ const keypointRoute = require('./routes/keypointRoutes')
 const s3Route = require('./routes/s3Routes')
 const app = express();
 const server = http.createServer(app);
+require('dotenv/config');
 
 const sixHour = 1000 * 60 * 60 * 6;
-require('dotenv/config');
 const io = new Server(server, {
   cors: {
     origin: "http://localhost:3000",
@@ -38,7 +38,7 @@ app.use(session({
     secure: false
   },
   isAuth: false,
-  secret: process.env.JWTPRIVATEKEY,
+  secret: process.env.PRIVATEKEY,
   resave: false,
   saveUninitialized: false,
 }))
@@ -58,7 +58,7 @@ app.use(keypointRoute);
 app.use(s3Route);
 
 AWS.config.update({
-  "region": "eu-central-1",
+  "region": process.env.AWS_FETCH_BUCKET_REGION,
   "accessKeyId": process.env.AWS_ACCESS_KEY_ID, "secretAccessKey":  process.env.AWS_SECRET_ACCESS_KEY
 });
 mongoose.connect(process.env.DB_CONNECTION, {

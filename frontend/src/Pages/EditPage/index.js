@@ -50,7 +50,8 @@ const [imge, setImge] = useState(null)
     await Axios.post('/addCompletedTask',{
       pose_name: task.pose_name,
       image_id: task.image_id,
-      frame: addJsonToFrame(frame_name,keypoints,EditWidowSize),
+      frame_name: frame_name,
+      frame: addJsonToFrame(frame_name,keypoints,isEdited,EditWidowSize),
       task_id: task_id
       },{withCredentials: true}).then(async (response) => {
         if(response.data.isTaskFinished)
@@ -85,7 +86,7 @@ const [imge, setImge] = useState(null)
                   src={`data:image/jpg;base64,${imge}`}
                   alt="Pose Frame"
                   ></img>
-                <Canvas window_size={EditWidowSize} selectedTool={selectedTool} selectedType={selectedType} importJson={frame} onSubmit={(frame_name, points, isedit) => onSubmit(frame_name, points, isedit)}/>
+                <Canvas window_size={EditWidowSize} selectedTool={selectedTool} selectedType={selectedType} importJson={frame} onSubmit={(frame_name, points, isEdit) => onSubmit(frame_name, points, isEdit)}/>
             </div>
             <RightList tasks={tasks} onSelect={(id) => setTask_id(id)}/>
         </ScEditPage>
