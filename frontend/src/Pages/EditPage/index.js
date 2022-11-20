@@ -15,7 +15,8 @@ const [selectedType, setselectedType] = useState("");
 const [task_id, setTask_id] = useState()
 const [tasks, setTasks] = useState([])
 const [frame, setFrame] = useState({})
-const [imge, setImge] = useState(null)
+const [frame_name, setFrame_name] = useState("")
+const [imge_url, setImge_url] = useState(null)
 
   useEffect(() => {
     const fetchData = async() => {
@@ -29,13 +30,7 @@ const [imge, setImge] = useState(null)
           }
           else
             task = response.data.tasks.find(({id}) => id === task_id)
-          
-          console.log("useEFFECT ",task.frames[0][0].frame)
-          await Axios.post('/getimage-from-s3',{
-            frame_id: task.frames[0][0].frame
-          }).then((response) => {
-            setImge(response.data.bucketData)
-          })
+          setFrame_name(task.frames[0][0].frame)
           setFrame({frame_name: task.frames[0][0].frame, keypoints: GetPointAndLines(task.frames[0][0],EditWidowSize)})
           });
       } catch (error) {
@@ -44,6 +39,17 @@ const [imge, setImge] = useState(null)
     }
     fetchData()
   },[task_id]);
+
+  useEffect(() =>{
+    const fetchImage = async() => {
+      await Axios.post('/getimage-from-s3',{
+        frame_name: frame_name
+      }).then((response) => {
+        setImge_url(response.data.bucketData)
+      })
+    }
+    fetchImage()
+  },[frame_name])
 
   const onSubmit = async(frame_name, keypoints, isEdited) =>{
     let task = tasks.find(({id}) => id === task_id)
@@ -58,12 +64,14 @@ const [imge, setImge] = useState(null)
           task = response.data.tasks[0]
         else
           task = response.data.tasks.find(({id}) => id === task_id)
-
+        
         if(task === undefined){
           setFrame({})
           setTasks([])
         }
         else{
+          setFrame({frame_name: task.frames[0][0].frame, keypoints: GetPointAndLines(task.frames[0][0],EditWidowSize)})
+          setFrame_name(task.frames[0][0].frame)
           setTasks(response.data.tasks)
           setTask_id(task.id)
         }
@@ -83,7 +91,8 @@ const [imge, setImge] = useState(null)
                 <img
                   className="Image"
                   id='IMG'
-                  src={`data:image/jpg;base64,${imge}`}
+                  //src={`data:image/jpg;base64,${imge_url}`}
+                  src={imge_url}
                   alt="Pose Frame"
                   ></img>
                 <Canvas window_size={EditWidowSize} selectedTool={selectedTool} selectedType={selectedType} importJson={frame} onSubmit={(frame_name, points, isEdit) => onSubmit(frame_name, points, isEdit)}/>

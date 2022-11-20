@@ -72,34 +72,48 @@ module.exports.removeTask_post = async (req, res) => {
 
 module.exports.addCompletedTask_post = async (req, res) => {
     try { 
-        console.log("Hello",req.body.frame_name)
-
-        docClient.put({
+        console.log("Hello",req.body.pose_name," ",req.body.image_id)
+        var params = {
             TableName: 'CompletedTask',
-            Item:{
-                image_id: req.body.image_id,
-                frame_name: req.body.frame_name,
+            Key: {
                 pose_name: req.body.pose_name,
-                frame: req.body.frame
-            }
-          },function (err, data){
+                image_id: req.body.image_id,
+             },
+            UpdateExpression: 'SET #frame = list_append(if_not_exists(#frame, :frame_item), :frame_item)',
+            ExpressionAttributeNames: {
+              '#frame': 'frame'
+            },
+            ExpressionAttributeValues: {
+              ':frame_item': [req.body.frame]
+            },
+            ReturnValues: "UPDATED_NEW"
+          }
+        docClient.update(params, function (err, data) {
             if (err) {
                 console.log("users::update::error - " + JSON.stringify(err, null, 2));
             } else {
                 console.log("users::update::success");
             }
-        });
+        })
         const tasks = req.session.tasks;
         const task = tasks.find(({id}) => id === req.body.task_id)
         if(task.frames[0].length > 1){
-            task.frames[0].shift()
-            task.finished_frame_count += 1;
-            await Task.updateOne({id: task.task_id, dedicated_user: task.dedicated_user },{$set:{finished_frame_count: task.finished_frame_count }})
+            task.finished_frame_count += 1
+            task.frame_intervals[0][0] +=1
+
+            if(task.frame_intervals[0][0] === task.frame_intervals[0][1]){
+                task.frames.shift()
+                task.frame_intervals[0].shift()
+            }
+            else
+                task.frames[0].shift()
+            console.log(task.frame_intervals)
+            await Task.updateOne({id: task.id, dedicated_user: task.dedicated_user },{$set:{frame_intervals: task.frame_intervals, frames: task.frames, finished_frame_count: task.finished_frame_count }})
             res.status(201).send({tasks: tasks, isTaskFinished: false, message: "Task is added successfully" });
         }
         else{
             tasks.splice(tasks.indexOf(task), 1)
-            await Task.findOneAndRemove({ id: task.task_id, dedicated_user: task.dedicated_user })
+            await Task.findOneAndRemove({ id: task.id, dedicated_user: task.dedicated_user })
             res.status(201).send({tasks: tasks, isTaskFinished: true, message: "Task is finished successfully" });
         }
     } catch (error) {

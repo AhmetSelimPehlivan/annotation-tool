@@ -4,7 +4,6 @@ const fs = require('fs');
 const AWS = require("aws-sdk");
 require('dotenv/config');
 
-
 const { S3Client, GetObjectCommand, ListObjectsCommand } = require("@aws-sdk/client-s3");
 AWS.config.update({
   "region": process.env.AWS_DB_REGION,
@@ -58,7 +57,7 @@ const unzipFromS3 = async(s3Client ,key, bucket) => {
       };
       const command = new GetObjectCommand(options);
       const { Body } = await s3Client.send(command);
-      console.log(Body)
+      
       const uploadedS3File = await streamToString(Body);
       if(key.includes(".zip") === false)
         resolve(uploadedS3File)
@@ -106,8 +105,9 @@ const ImportJson = (name,image_id,data) => {
 }
 
 const uploadBucketToS3 = async (bucketName,pose_name) => {
-  const finishedImages = await Image.find({available_frame_count: 398})  
-  console.log(finishedImages)  
+  const finishedImages = await Image.find({available_frame_count: 348})
+  console.log(finishedImages[0].pose_name)
+  console.log(finishedImages[0].image_id)
   var params = {
       TableName: "CompletedTask",
       Key: {

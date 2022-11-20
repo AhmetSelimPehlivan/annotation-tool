@@ -2,7 +2,7 @@ import Styled from "styled-components";
 const ScLeftList = Styled.div`
     background-color: #69604F;
     .list{
-        width: 125px;
+        width: 140px;
         height: 100vh;
     }
     .shape-tools{

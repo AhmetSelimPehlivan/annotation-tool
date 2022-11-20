@@ -3,8 +3,9 @@ const {getImageFromS3} = require('../services/s3_getImage')
 
 module.exports.readImageFromBucket = async(req, res) => {
     try {
-        const bucketData = await getImageFromS3(process.env.AWS_FETCH_BUCKET_NAME,req.body.frame_id);
-        res.status(201).send({bucketData: bucketData});
+        console.log(req.body.frame_name)
+        const image_url = await getImageFromS3(process.env.AWS_FETCH_BUCKET_NAME,req.body.frame_name);
+        res.status(201).send({bucketData: image_url});
     } catch (error) {
         res.status(500).send([]);
     }
