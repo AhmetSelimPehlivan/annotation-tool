@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const bcrypt = require("bcrypt");
 
 const UserSchema = new mongoose.Schema({
     user_name:{
@@ -17,23 +16,9 @@ const UserSchema = new mongoose.Schema({
     password:{
         type: String,
         required: true
+    },
+    refresh_token:{
+        type: String,
     }
 });
-
-UserSchema.pre('save', async function (next){
-    const salt = await bcrypt.genSalt(Number(process.env.SALT));
-    this.password = await bcrypt.hash(this.password, salt);
-    next()
-})
-
-UserSchema.statics.login = async function(userName, password) {
-    const user = await this.findOne({ user_name: userName });
-    const auth = await bcrypt.compare(password, user.password);
-    
-    if (auth)
-        return user;
-    else if (!user || !auth)
-        return "!Invalid Email or Password"
-  };
-
 module.exports = mongoose.model('Users', UserSchema);

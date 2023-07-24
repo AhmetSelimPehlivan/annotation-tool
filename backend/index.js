@@ -35,12 +35,13 @@ app.use(session({
   cookie: { 
     expires: sixHour, 
     httpOnly: true,
-    secure: false
+    secure: false,
+    maxAge: (24 * 60 * 60 * 1000)
   },
   isAuth: false,
-  secret: process.env.PRIVATEKEY,
   resave: false,
   saveUninitialized: false,
+  secret: process.env.PRIVATEKEY,
 }))
 
 app.set('trust proxy', 1) // trust first proxy
@@ -48,13 +49,11 @@ app.use(cors({credentials: true, origin: 'http://localhost:3000'}));
 app.use(express.json());
 app.use(cookieParser());
 app.use(bodyParser.json());
-
 // Routes
 app.use(authRoute);
 app.use(imageRoute);
 app.use(taskRoute);
 app.use(keypointRoute);
-// app.use(completedTaskRoute)
 app.use(s3Route);
 
 AWS.config.update({

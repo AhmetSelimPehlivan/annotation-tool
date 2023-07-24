@@ -1,10 +1,8 @@
 import {useNavigate, useLocation } from 'react-router-dom';
 import  React,{useEffect, useState} from "react";
-import { AuthContext } from "../../Context/AuthContext"
 import { emailValidator, passwordValidator } from '../../Constants';
 import ScUserLogin from "./ScUserLogin";
 import Axios from '../../Api/axios';
-import {prototype} from 'prop-types';
 
 const UserLogin = () => {
     const navigation = useNavigate();
@@ -21,7 +19,7 @@ const UserLogin = () => {
     const from = location.state?.from?.pathname || "/ImageSet";
     
     useEffect(() => {
-        if(sessionStorage.getItem("role") === "User")
+        if(sessionStorage.getItem("user_name") === "User")
             navigation(from, { replace: true })
         const loginBtn = document.getElementById('login');
         const signupBtn = document.getElementById('signup');
@@ -85,6 +83,7 @@ const UserLogin = () => {
                 }, { withCredentials: true }).then(async (response) => {
                     sessionStorage.setItem("user_name", response.data.user_name)
                     sessionStorage.setItem("role", response.data.role)
+
                     response.status === 200 ? navigation(from, { replace: true }): setwrongLogin(response.data.message);  
                 });
         } catch (error) {
@@ -111,7 +110,6 @@ const UserLogin = () => {
                                     <p>{save_msg}</p>
                                 </div> : ""}
                             <button className="submit-btn" onClick={addUser}>Sign up</button>
-                        
                     </div>
                     <div  className="login slide-up">
                         <div  className="center">
